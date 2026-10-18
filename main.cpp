@@ -10,10 +10,18 @@
 #include "NoiDungVOD.h"
 #include "TheLoaiKenh.h"
 
+#include "GoiKenh.h"
+#include "GoiKenhMenu.h"
+#include "KhachHang.h"
+#include "KhachHangMenu.h"
+
 using namespace std;
 
 Repository<NoiDungVOD>		repoVOD("data/noidungvod.txt")
 Repository<TheLoaiKenh>		repoTheLoai("data/theloaikenh.txt")
+
+const string FILE_GOI_KENH   = "data/goi_kenh.txt";
+const string FILE_KHACH_HANG = "data/khach_hang.txt";
 
 void clearScreen() {
     #ifdef _WIN32
@@ -401,6 +409,20 @@ void menuVOD() {
     } while (choice != 0);
 }
 
+// Menu chinh
+void hienThi() {
+    Display::inDuongKe(65);
+    cout << "      HE THONG QUAN LY DICH VU TRUYEN HINH SO/IPTV\n";
+    Display::inDuongKe(65);
+    cout << "  De tai 7 - Ky thuat lap trinh\n";
+    cout << "  Thuc hien: Goi Kenh & Khach Hang\n";
+    Display::inDuongKe(65);
+    cout << "  1. Quan ly Goi Kenh\n";
+    cout << "  2. Quan ly Khach Hang\n";
+    cout << "  0. Thoat chuong trinh\n";
+    Display::inDuongKe(65);
+}
+
 int main() {
     #ifdef _WIN32
         system("chcp 65001 > nul"); // Ho tro tieng Viet console
@@ -440,6 +462,51 @@ int main() {
                 pauseScreen();
         }
     } while (choice != 0);
+
+        // Khoi tao cac Repository
+    Repository<GoiKenh>   repoGK(FILE_GOI_KENH);
+    Repository<KhachHang> repoKH(FILE_KHACH_HANG);
+
+    // Nap du lieu tu file
+    try {
+        cout << "  Dang nap du lieu tu file...\n";
+        repoGK.loadFromFile();
+        cout << "  + Goi kenh: " << repoGK.count() << " ban ghi.\n";
+        repoKH.loadFromFile();
+        cout << "  + Khach hang: " << repoKH.count() << " ban ghi.\n";
+        cout << "  Nap du lieu thanh cong!\n\n";
+    } catch (const FileException& e) {
+        cerr << "  [LOI] " << e.what() << "\n";
+        return 1;
+    }
+
+    // Khoi tao cac menu
+    GoiKenhMenu   menuGK(repoGK);
+    KhachHangMenu menuKH(repoKH, repoGK);
+
+    // Lambda kiem tra rang buoc goi kenh - khach hang
+    auto ktraGoi = [&repoKH](const string& maGoi) -> bool {
+        return ktraKhachHangDungGoi(repoKH, maGoi);
+    };
+
+    // Vong lap menu chinh
+    int luaChon;
+    do {
+        hienThiMenuChinh();
+        luaChon = InputHelper::nhapInt("  Nhap lua chon: ", 0, 2);
+
+        switch (luaChon) {
+            case 1:
+                menuGK.hienThiMenu(ktraGoi);
+                break;
+            case 2:
+                menuKH.hienThiMenu();
+                break;
+            case 0:
+                cout << "\n  Cam on ban da su dung he thong. Tam biet!\n\n";
+                break;
+        }
+    } while (luaChon != 0);
 
     return 0;
 }
