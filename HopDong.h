@@ -53,6 +53,7 @@ public:
         if (v < 0) throw invalid_argument("Don gia thang khong duoc am!");
         donGiaThang = v;
     }
+    void setTrangThai(const string& v) { trangThai = v; }
 
     string getId() const override { return maHopDong; }
     string getDisplayName() const override { return maKhachHang + " - " + goiDichVu; }
