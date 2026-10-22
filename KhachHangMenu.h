@@ -8,6 +8,10 @@
 
 #include <iostream>
 #include <iomanip>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
 #include <functional>
 #include "KhachHang.h"
 #include "GoiKenh.h"
@@ -24,12 +28,12 @@ private:
     // ------- 1. THEM MOI -------
     void themKhachHang() {
         Display::inTieuDe("THEM KHACH HANG MOI", 65);
-        KhachHang kh;
         try {
-            kh.nhapDuLieu();
+            KhachHang kh;
+            kh.inputData();
 
             // Kiem tra goi kenh co ton tai khong (neu da nhap)
-            if (!kh.getMaGoiKenh().empty() && !repoGK.exists(kh.getMaGoiKenh())) {
+            if (!kh.getMaGoiKenh().empty() && repoGK.findById(kh.getMaGoiKenh()) == nullptr) {
                 Display::inThongBaoLoi("Ma goi kenh '" + kh.getMaGoiKenh() + "' khong ton tai trong he thong!");
                 if (!InputHelper::xacNhan("  Tiep tuc them khach hang voi ma goi nay khong?")) {
                     cout << "  Da huy them khach hang.\n";
@@ -38,13 +42,12 @@ private:
                 }
             }
 
-            repoKH.add(kh);
-            Display::inThongBaoOK("Them khach hang '" + kh.getId() + "' thanh cong!");
-        } catch (const DuplicateIdException& e) {
-            Display::inThongBaoLoi(e.what());
-        } catch (const InvalidInputException& e) {
-            Display::inThongBaoLoi(e.what());
-        } catch (const FileException& e) {
+            if (repoKH.add(kh)) {
+                Display::inThongBaoOK("Them khach hang '" + kh.getId() + "' thanh cong!");
+            } else {
+                Display::inThongBaoLoi("Ma khach hang '" + kh.getId() + "' da ton tai!");
+            }
+        } catch (const exception& e) {
             Display::inThongBaoLoi(e.what());
         }
         Display::nhanPhimDeTiep();
@@ -59,10 +62,9 @@ private:
             Display::nhanPhimDeTiep();
             return;
         }
-        KhachHang::inTieuDeBang();
-        for (const auto& kh : ds) {
-            kh.hienThiDanhSach();
-        }
+
+        Display::inBang(ds);
+
         // Thong ke nhanh
         int hoatDong = 0, tamNgung = 0, daHuy = 0;
         for (const auto& kh : ds) {
@@ -85,7 +87,7 @@ private:
         if (!kh) {
             Display::inThongBaoLoi("Khong tim thay khach hang voi ma '" + ma + "'!");
         } else {
-            kh->hienThi();
+            kh->display();
             // Hien thi them thong tin goi kenh neu co
             if (!kh->getMaGoiKenh().empty()) {
                 GoiKenh* gk = repoGK.findById(kh->getMaGoiKenh());
@@ -116,54 +118,66 @@ private:
         if (ch == 1) {
             string ma = InputHelper::nhapChuoiBatBuoc("  Ma khach hang: ");
             KhachHang* kh = repoKH.findById(ma);
-            if (kh) kh->hienThi();
+            if (kh) kh->display();
             else Display::inThongBaoLoi("Khong tim thay!");
         }
         else if (ch == 2) {
             string ten = InputHelper::nhapChuoiBatBuoc("  Nhap tu khoa ho ten: ");
             string tenL = StrUtils::toLower(ten);
-            auto kq = repoKH.findWhere([&tenL](const KhachHang& kh) {
-                return StrUtils::toLower(kh.getHoTen()).find(tenL) != string::npos;
-            });
+            vector<KhachHang> kq;
+            for (const auto& kh : repoKH.getAll()) {
+                if (StrUtils::toLower(kh.getHoTen()).find(tenL) != string::npos) {
+                    kq.push_back(kh);
+                }
+            }
             if (kq.empty()) cout << "  Khong tim thay ket qua.\n";
             else {
-                cout << "  Tim thay " << kq.size() << " ket qua:\n\n";
-                KhachHang::inTieuDeBang();
-                for (auto* kh : kq) kh->hienThiDanhSach();
+                cout << "  Tim thay " << kq.size() << " ket qua:\n";
+                Display::inBang(kq);
             }
         }
         else if (ch == 3) {
             string sdt = InputHelper::nhapChuoiBatBuoc("  So dien thoai: ");
-            auto kq = repoKH.findWhere([&sdt](const KhachHang& kh) {
-                return kh.getSoDienThoai() == sdt;
-            });
+            vector<KhachHang> kq;
+            for (const auto& kh : repoKH.getAll()) {
+                if (kh.getSoDienThoai() == sdt) {
+                    kq.push_back(kh);
+                }
+            }
             if (kq.empty()) cout << "  Khong tim thay.\n";
-            else for (auto* kh : kq) kh->hienThi();
+            else {
+                for (const auto& kh : kq) kh.display();
+            }
         }
         else if (ch == 4) {
             string maGoi = InputHelper::nhapChuoiBatBuoc("  Ma goi kenh: ");
-            auto kq = repoKH.findWhere([&maGoi](const KhachHang& kh) {
-                return kh.getMaGoiKenh() == maGoi;
-            });
+            vector<KhachHang> kq;
+            for (const auto& kh : repoKH.getAll()) {
+                if (kh.getMaGoiKenh() == maGoi) {
+                    kq.push_back(kh);
+                }
+            }
             if (kq.empty()) cout << "  Khong co khach hang nao dung goi '" << maGoi << "'.\n";
             else {
-                cout << "  " << kq.size() << " khach hang dang dung goi '" << maGoi << "':\n\n";
-                KhachHang::inTieuDeBang();
-                for (auto* kh : kq) kh->hienThiDanhSach();
+                cout << "  " << kq.size() << " khach hang dang dung goi '" << maGoi << "':\n";
+                Display::inBang(kq);
             }
         }
         else if (ch == 5) {
             cout << "  Trang thai (Hoat dong / Tam ngung / Da huy): ";
             string tt;
             getline(cin, tt);
-            auto kq = repoKH.findWhere([&tt](const KhachHang& kh) {
-                return kh.getTrangThai() == tt;
-            });
+            tt = StrUtils::trim(tt);
+            vector<KhachHang> kq;
+            for (const auto& kh : repoKH.getAll()) {
+                if (kh.getTrangThai() == tt) {
+                    kq.push_back(kh);
+                }
+            }
             if (kq.empty()) cout << "  Khong co khach hang voi trang thai '" << tt << "'.\n";
             else {
-                cout << "  Tim thay " << kq.size() << " ket qua:\n\n";
-                KhachHang::inTieuDeBang();
-                for (auto* kh : kq) kh->hienThiDanhSach();
+                cout << "  Tim thay " << kq.size() << " ket qua:\n";
+                Display::inBang(kq);
             }
         }
         Display::nhanPhimDeTiep();
@@ -179,25 +193,31 @@ private:
         int ch = InputHelper::nhapInt("  Lua chon: ", 0, 3);
         if (ch == 0) return;
 
+        vector<KhachHang> ds = repoKH.getAll();
+        if (ds.empty()) {
+            cout << "  (Chua co khach hang nao trong he thong)\n";
+            Display::nhanPhimDeTiep();
+            return;
+        }
+
         if (ch == 1) {
-            repoKH.sortBy([](const KhachHang& a, const KhachHang& b) {
+            sort(ds.begin(), ds.end(), [](const KhachHang& a, const KhachHang& b) {
                 return StrUtils::toLower(a.getHoTen()) < StrUtils::toLower(b.getHoTen());
             });
             cout << "  Da sap xep theo ho ten A-Z.\n";
         } else if (ch == 2) {
-            repoKH.sortBy([](const KhachHang& a, const KhachHang& b) {
+            sort(ds.begin(), ds.end(), [](const KhachHang& a, const KhachHang& b) {
                 return a.getId() < b.getId();
             });
             cout << "  Da sap xep theo ma khach hang.\n";
         } else if (ch == 3) {
-            repoKH.sortBy([](const KhachHang& a, const KhachHang& b) {
+            sort(ds.begin(), ds.end(), [](const KhachHang& a, const KhachHang& b) {
                 return a.getNgayDangKy() < b.getNgayDangKy();
             });
             cout << "  Da sap xep theo ngay dang ky.\n";
         }
-        cout << "\n";
-        KhachHang::inTieuDeBang();
-        for (const auto& kh : repoKH.getAll()) kh.hienThiDanhSach();
+
+        Display::inBang(ds);
         Display::nhanPhimDeTiep();
     }
 
@@ -211,66 +231,23 @@ private:
             Display::nhanPhimDeTiep();
             return;
         }
-        kh->hienThi();
-        cout << "  (Nhan Enter de giu nguyen gia tri cu)\n\n";
+
+        kh->display();
+        KhachHang backup = *kh;
 
         try {
-            kh->setHoTen(InputHelper::nhapChuoiTuyCon("  Ho va ten", kh->getHoTen()));
+            kh->updateData();
 
-            // So CCCD
-            cout << "  So CCCD [" << kh->getSoCCCD() << "]: ";
-            string cccd;
-            getline(cin, cccd);
-            if (!cccd.empty()) kh->setSoCCCD(cccd);
-
-            // SĐT
-            cout << "  So dien thoai [" << kh->getSoDienThoai() << "]: ";
-            string sdt;
-            getline(cin, sdt);
-            if (!sdt.empty()) kh->setSoDienThoai(sdt);
-
-            // Email
-            cout << "  Email [" << kh->getEmail() << "]: ";
-            string email;
-            getline(cin, email);
-            if (!email.empty()) kh->setEmail(email);
-
-            kh->setDiaChi(InputHelper::nhapChuoiTuyCon("  Dia chi", kh->getDiaChi()));
-
-            // Ngay dang ky
-            cout << "  Ngay dang ky [" << kh->getNgayDangKy() << "]: ";
-            string ngay;
-            getline(cin, ngay);
-            if (!ngay.empty()) kh->setNgayDangKy(ngay);
-
-            // Ma goi kenh
-            cout << "  Ma goi kenh [" << kh->getMaGoiKenh() << "]: ";
-            string maGoi;
-            getline(cin, maGoi);
-            if (!maGoi.empty()) {
-                if (!repoGK.exists(maGoi)) {
-                    Display::inThongBaoLoi("Ma goi kenh '" + maGoi + "' khong ton tai!");
-                } else {
-                    kh->setMaGoiKenh(maGoi);
-                }
+            // Kiem tra goi kenh moi co ton tai khong
+            if (!kh->getMaGoiKenh().empty() && repoGK.findById(kh->getMaGoiKenh()) == nullptr) {
+                *kh = backup;
+                throw invalid_argument("Ma goi kenh '" + kh->getMaGoiKenh() + "' khong ton tai!");
             }
 
-            // Trang thai
-            cout << "  Trang thai hien tai: " << kh->getTrangThai() << "\n";
-            cout << "  Trang thai moi:\n"
-                 << "    1. Hoat dong\n"
-                 << "    2. Tam ngung\n"
-                 << "    3. Da huy\n"
-                 << "    0. Giu nguyen\n";
-            int tt = InputHelper::nhapInt("  Chon (0-3): ", 0, 3);
-            vector<string> dsTT = {"", "Hoat dong", "Tam ngung", "Da huy"};
-            if (tt > 0) kh->setTrangThai(dsTT[tt]);
-
-            repoKH.update(*kh);
+            repoKH.saveAfterUpdate();
             Display::inThongBaoOK("Cap nhat khach hang '" + ma + "' thanh cong!");
-        } catch (const InvalidInputException& e) {
-            Display::inThongBaoLoi(e.what());
-        } catch (const FileException& e) {
+        } catch (const exception& e) {
+            *kh = backup;
             Display::inThongBaoLoi(e.what());
         }
         Display::nhanPhimDeTiep();
@@ -286,7 +263,7 @@ private:
             Display::nhanPhimDeTiep();
             return;
         }
-        kh->hienThi();
+        kh->display();
 
         // Rang buoc: khach hang dang Hoat dong thi canh bao
         if (kh->getTrangThai() == "Hoat dong") {
@@ -305,8 +282,11 @@ private:
         }
 
         try {
-            repoKH.remove(ma);
-            Display::inThongBaoOK("Xoa khach hang '" + ma + "' thanh cong!");
+            if (repoKH.remove(ma)) {
+                Display::inThongBaoOK("Xoa khach hang '" + ma + "' thanh cong!");
+            } else {
+                Display::inThongBaoLoi("Xoa that bai!");
+            }
         } catch (const exception& e) {
             Display::inThongBaoLoi(e.what());
         }
@@ -359,6 +339,10 @@ private:
 public:
     KhachHangMenu(Repository<KhachHang>& rKH, Repository<GoiKenh>& rGK)
         : repoKH(rKH), repoGK(rGK) {}
+
+    void chay() {
+        hienThiMenu();
+    }
 
     void hienThiMenu() {
         int luaChon;
