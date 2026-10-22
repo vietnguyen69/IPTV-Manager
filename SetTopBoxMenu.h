@@ -75,6 +75,8 @@ public:
     SetTopBoxMenu(Repository<SetTopBox>& r, function<bool(const string&)> kh, function<bool(const string&)> phieu)
         : repo(r), khTonTai(kh), coPhieu(phieu) {}
 
+    void chay() { hienThiMenu(); }
+
     void hienThiMenu() {
         string in;
         do {
