@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <limits>
+#include <climits>
 #include <iomanip>
 #include <algorithm>
 #include <stdexcept>
@@ -219,7 +220,22 @@ namespace Display {
 
     inline void nhanPhimDeTiep() {
         cout << "\n  Nhan Enter de tiep tuc...";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        string dummy;
+        getline(cin, dummy);
+    }
+
+    template <typename T>
+    inline void inBang(const vector<T>& items) {
+        if (items.empty()) {
+            cout << "\n  [Danh sach trong!]\n";
+            return;
+        }
+        cout << "\n";
+        items[0].displayTableHeader();
+        for (size_t i = 0; i < items.size(); ++i) {
+            items[i].displayTableRow((int)(i + 1));
+        }
+        cout << "\n  Tong cong: " << items.size() << " ban ghi.\n";
     }
 }
 
