@@ -68,6 +68,8 @@ class PhieuHoTroMenu {
 public:
     PhieuHoTroMenu(Repository<PhieuHoTro>& r, function<bool(const string&)> stb) : repo(r), stbTonTai(stb) {}
 
+    void chay() { hienThiMenu(); }
+
     void hienThiMenu() {
         string in;
         do {
