@@ -1,10 +1,6 @@
 /*
  * File   : KenhTruyenHinh.h
  * Tac gia: Duong Duc Manh - MSSV: B24DCVT240
- * Mo ta  : Lop KenhTruyenHinh - doi tuong "Kenh truyen hinh" (use case Quan ly kenh truyen hinh).
- *          Ke thua Entity. Thuoc tinh private, setter co kiem tra hop le (nem ValidationException).
- *
- * Dinh dang dong trong file: MaKenh|TenKenh|MaTheLoai|DoPhanGiai|SoKenh|TrangThai
  */
 #ifndef KENHTRUYENHINH_H
 #define KENHTRUYENHINH_H
