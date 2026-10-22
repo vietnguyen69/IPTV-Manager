@@ -9,56 +9,159 @@
 #ifndef KENHTRUYENHINH_H
 #define KENHTRUYENHINH_H
 
-#include <functional>
-#include <string>
 #include "Entity.h"
+#include <iomanip>
+#include <stdexcept>
 
 class KenhTruyenHinh : public Entity {
-public:
-    /** Ham kiem tra rang buoc lien doi tuong (do menu gan vao), nem ValidationException neu vi pham. */
-    using KiemTraMa = std::function<void(const std::string&)>;
-
 private:
-    std::string ma_;          // Kxxx
-    std::string ten_;
-    std::string maTheLoai_;     // ma the loai, dang TLxx (tham chieu use case The loai kenh)
-    std::string doPhanGiai_;  // SD / HD / FHD / 4K
-    int soKenh_ = 1;          // so kenh tren dau thu (1..999)
-    bool dangPhat_ = true;      // true: dang phat, false: tam ngung
-    KiemTraMa kiemTraMa_;         // vd: kiem tra trung ma trong Repository
+    string maKenh;
+    string tenKenh;
+    string maTheLoai;
+    string chatLuong;
+    string ngonNgu;
+    string moTa;
 
 public:
-    KenhTruyenHinh() = default;
+    KenhTruyenHinh()
+        : maKenh(""), tenKenh(""), maTheLoai(""),
+          chatLuong(""), ngonNgu(""), moTa("") {}
 
-    // ----- getter -----
-    const std::string& layTen() const { return ten_; }
-    const std::string& layMaTheLoai() const { return maTheLoai_; }
-    const std::string& layDoPhanGiai() const { return doPhanGiai_; }
-    int laySoKenh() const { return soKenh_; }
-    bool laDangPhat() const { return dangPhat_; }
+    KenhTruyenHinh(const string& mk, const string& tk, const string& mtl,
+                   const string& cl, const string& nn, const string& mt)
+        : maKenh(mk), tenKenh(tk), maTheLoai(mtl),
+          chatLuong(cl), ngonNgu(nn), moTa(mt) {}
 
-    // ----- setter co kiem tra hop le -----
-    void datMa(const std::string& id);
-    void datTen(const std::string& name);
-    void datMaTheLoai(const std::string& genreId);
-    void datDoPhanGiai(const std::string& res);
-    void datSoKenh(int number);
-    void datTrangThai(bool a) { dangPhat_ = a; }
+    string getMaKenh() const { return maKenh; }
+    string getTenKenh() const { return tenKenh; }
+    string getMaTheLoai() const { return maTheLoai; }
+    string getChatLuong() const { return chatLuong; }
+    string getNgonNgu() const { return ngonNgu; }
+    string getMoTa() const { return moTa; }
 
-    /** Gan ham kiem tra ma kenh (vd: khong duoc trung). Goi xoaKiemTra() khi xong. */
-    void datKiemTraMa(KiemTraMa f) { kiemTraMa_ = std::move(f); }
-    void xoaKiemTra() { kiemTraMa_ = nullptr; }
+    void setMaKenh(const string& mk) { maKenh = mk; }
 
-    // ----- cai dat giao dien Entity -----
-    std::string getId() const override { return ma_; }
-    std::string getDisplayName() const override { return ten_; }
-    void display() const override;
-    void displayTableHeader() const override;
-    void displayTableRow(int stt) const override;
-    std::string toFileString() const override;
-    void fromFileString(const std::string& line) override;
-    void inputData() override;   // nhap moi tu ban phim
-    void updateData() override;  // sua tung truong, Enter = giu nguyen (khong sua ma)
+    void setTenKenh(const string& tk) {
+        if (tk.empty()) throw invalid_argument("Ten kenh khong duoc de trong!");
+        tenKenh = tk;
+    }
+
+    void setMaTheLoai(const string& mtl) { maTheLoai = mtl; }
+
+    void setChatLuong(const string& cl) {
+        if (cl != "SD" && cl != "HD" && cl != "Full HD" && cl != "4K") {
+            throw invalid_argument("Chat luong phai la: SD, HD, Full HD hoac 4K!");
+        }
+        chatLuong = cl;
+    }
+
+    void setNgonNgu(const string& nn) { ngonNgu = nn; }
+    void setMoTa(const string& mt) { moTa = mt; }
+
+    string getId() const override { return maKenh; }
+    string getDisplayName() const override { return tenKenh; }
+
+    void display() const override {
+        cout << "  Ma kenh       : " << maKenh << endl;
+        cout << "  Ten kenh      : " << tenKenh << endl;
+        cout << "  Ma the loai   : " << maTheLoai << endl;
+        cout << "  Chat luong    : " << chatLuong << endl;
+        cout << "  Ngon ngu      : " << ngonNgu << endl;
+        cout << "  Mo ta         : " << moTa << endl;
+    }
+
+    void displayTableHeader() const override {
+        cout << "  " << left
+             << setw(6)  << "STT"
+             << setw(12) << "Ma kenh"
+             << setw(26) << "Ten kenh"
+             << setw(12) << "The loai"
+             << setw(12) << "Chat luong"
+             << setw(12) << "Ngon ngu"
+             << endl;
+        cout << "  " << string(80, '-') << endl;
+    }
+
+    void displayTableRow(int stt) const override {
+        cout << "  " << left
+             << setw(6)  << stt
+             << setw(12) << maKenh
+             << setw(26) << tenKenh
+             << setw(12) << maTheLoai
+             << setw(12) << chatLuong
+             << setw(12) << ngonNgu
+             << endl;
+    }
+
+    string toFileString() const override {
+        return maKenh + "|" + tenKenh + "|" + maTheLoai + "|"
+             + chatLuong + "|" + ngonNgu + "|" + moTa;
+    }
+
+    void fromFileString(const string& line) override {
+        stringstream ss(line);
+        getline(ss, maKenh, '|');
+        getline(ss, tenKenh, '|');
+        getline(ss, maTheLoai, '|');
+        getline(ss, chatLuong, '|');
+        getline(ss, ngonNgu, '|');
+        getline(ss, moTa, '|');
+    }
+
+    void inputData() override {
+        cout << "  Nhap ma kenh (VD: K001): ";
+        getline(cin, maKenh);
+        if (maKenh.empty()) throw invalid_argument("Ma kenh khong duoc de trong!");
+
+        cout << "  Nhap ten kenh: ";
+        getline(cin, tenKenh);
+        if (tenKenh.empty()) throw invalid_argument("Ten kenh khong duoc de trong!");
+
+        cout << "  Nhap ma the loai (VD: TL001): ";
+        getline(cin, maTheLoai);
+        if (maTheLoai.empty()) throw invalid_argument("Ma the loai khong duoc de trong!");
+
+        cout << "  Nhap chat luong (SD / HD / Full HD / 4K): ";
+        getline(cin, chatLuong);
+        if (chatLuong != "SD" && chatLuong != "HD" && chatLuong != "Full HD" && chatLuong != "4K") {
+            throw invalid_argument("Chat luong phai la: SD, HD, Full HD hoac 4K!");
+        }
+
+        cout << "  Nhap ngon ngu: ";
+        getline(cin, ngonNgu);
+        cout << "  Nhap mo ta: ";
+        getline(cin, moTa);
+    }
+
+    void updateData() override {
+        string temp;
+        cout << "  (Nhan Enter de giu nguyen gia tri cu)\n" << endl;
+
+        cout << "  Ten kenh [" << tenKenh << "]: ";
+        getline(cin, temp);
+        if (!temp.empty()) tenKenh = temp;
+
+        cout << "  Ma the loai [" << maTheLoai << "]: ";
+        getline(cin, temp);
+        if (!temp.empty()) maTheLoai = temp;
+
+        cout << "  Chat luong [" << chatLuong << "]: ";
+        getline(cin, temp);
+        if (!temp.empty()) {
+            if (temp != "SD" && temp != "HD" && temp != "Full HD" && temp != "4K") {
+                throw invalid_argument("Chat luong phai la: SD, HD, Full HD hoac 4K!");
+            }
+            chatLuong = temp;
+        }
+
+        cout << "  Ngon ngu [" << ngonNgu << "]: ";
+        getline(cin, temp);
+        if (!temp.empty()) ngonNgu = temp;
+
+        cout << "  Mo ta [" << moTa << "]: ";
+        getline(cin, temp);
+        if (!temp.empty()) moTa = temp;
+    }
 };
 
 #endif
