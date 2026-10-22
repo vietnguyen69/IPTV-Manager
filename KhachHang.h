@@ -12,26 +12,15 @@
 #include <iomanip>
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 #include "Entity.h"
 #include "Utils.h"
 
 using namespace std;
 
-/*
- * Lop KhachHang - Quan ly thong tin khach hang IPTV
- * Thuoc tinh:
- *   - maKH        : Ma dinh danh khach hang (dang KHxxx, VD: KH001)
- *   - hoTen       : Ho va ten khach hang
- *   - soCCCD      : So can cuoc cong dan
- *   - soDienThoai : So dien thoai lien lac
- *   - email       : Dia chi email
- *   - diaChi      : Dia chi lap dat
- *   - ngayDangKy  : Ngay dang ky dich vu (dd/mm/yyyy)
- *   - maGoiKenh   : Ma goi kenh dang su dung (khoa ngoai tham chieu GoiKenh)
- *   - trangThai   : Trang thai tai khoan (Hoat dong / Tam ngung / Da huy)
- */
 class KhachHang : public Entity {
 private:
+    string maKH;
     string hoTen;
     string soCCCD;
     string soDienThoai;
@@ -52,7 +41,6 @@ private:
             if (m < 1 || m > 12) return false;
             if (d < 1 || d > 31) return false;
             if (y < 1900 || y > 2100) return false;
-            // Kiem tra so ngay theo thang
             int maxDay[] = {31,29,31,30,31,30,31,31,30,31,30,31};
             if (d > maxDay[m-1]) return false;
             return true;
@@ -69,7 +57,7 @@ private:
         return true;
     }
 
-    // Kiem tra so dien thoai (10 chu so, bat dau bang 0)
+    // Kiem tra so dien thoai (9-11 chu so)
     static bool isSDTHopLe(const string& sdt) {
         if (sdt.size() < 9 || sdt.size() > 11) return false;
         for (char c : sdt) if (!isdigit(c)) return false;
@@ -78,7 +66,7 @@ private:
 
 public:
     // Constructor mac dinh
-    KhachHang() : Entity(""), hoTen(""), soCCCD(""), soDienThoai(""),
+    KhachHang() : maKH(""), hoTen(""), soCCCD(""), soDienThoai(""),
                   email(""), diaChi(""), ngayDangKy(""), maGoiKenh(""),
                   trangThai("Hoat dong") {}
 
@@ -86,11 +74,14 @@ public:
     KhachHang(const string& ma, const string& ht, const string& cccd,
               const string& sdt, const string& mail, const string& dc,
               const string& ngay, const string& maGoi, const string& tt)
-        : Entity(ma), hoTen(ht), soCCCD(cccd), soDienThoai(sdt),
+        : maKH(ma), hoTen(ht), soCCCD(cccd), soDienThoai(sdt),
           email(mail), diaChi(dc), ngayDangKy(ngay), maGoiKenh(maGoi),
           trangThai(tt) {}
 
     // ------- Getter / Setter -------
+    string getMaKH() const { return maKH; }
+    void setMaKH(const string& ma) { maKH = ma; }
+
     string getHoTen() const { return hoTen; }
     void setHoTen(const string& ht) {
         if (ht.empty()) throw InvalidInputException("Ho ten khong duoc de trong!");
@@ -100,10 +91,12 @@ public:
 
     string getSoCCCD() const { return soCCCD; }
     void setSoCCCD(const string& cccd) {
-        if (cccd.size() != 12 && cccd.size() != 9)
+        if (cccd.empty()) throw InvalidInputException("So CCCD khong duoc de trong!");
+        if (cccd.size() != 9 && cccd.size() != 12)
             throw InvalidInputException("So CCCD phai co 9 hoac 12 chu so!");
-        for (char c : cccd)
-            if (!isdigit(c)) throw InvalidInputException("So CCCD chi chua chu so!");
+        for (char c : cccd) {
+            if (!isdigit(c)) throw InvalidInputException("So CCCD chi duoc chua chu so!");
+        }
         soCCCD = cccd;
     }
 
@@ -117,7 +110,7 @@ public:
     string getEmail() const { return email; }
     void setEmail(const string& mail) {
         if (!isEmailHopLe(mail))
-            throw InvalidInputException("Dia chi email khong hop le!");
+            throw InvalidInputException("Dinh dang email khong hop le!");
         email = mail;
     }
 
@@ -130,12 +123,12 @@ public:
     string getNgayDangKy() const { return ngayDangKy; }
     void setNgayDangKy(const string& ngay) {
         if (!isNgayHopLe(ngay))
-            throw InvalidInputException("Ngay khong hop le! Dinh dang dd/mm/yyyy");
+            throw InvalidInputException("Ngay khong hop le (dinh dang dd/mm/yyyy, nam 1900-2100)!");
         ngayDangKy = ngay;
     }
 
     string getMaGoiKenh() const { return maGoiKenh; }
-    void setMaGoiKenh(const string& ma) { maGoiKenh = ma; }
+    void setMaGoiKenh(const string& maGoi) { maGoiKenh = maGoi; }
 
     string getTrangThai() const { return trangThai; }
     void setTrangThai(const string& tt) {
@@ -144,24 +137,92 @@ public:
         trangThai = tt;
     }
 
-    bool isHoatDong() const { return trangThai == "Hoat dong"; }
+    // ------- Cai dat 9 ham thuan ao tu Entity -------
+    string getId() const override { return maKH; }
+    string getDisplayName() const override { return hoTen; }
 
-    // ------- Cai dat cac ham thuan ao tu Entity -------
+    // Hien thi chi tiet mot ban ghi
+    void display() const override {
+        cout << "\n";
+        Display::inDuongKe(65);
+        cout << "  CHI TIET KHACH HANG\n";
+        Display::inDuongKe(65);
+        cout << "  Ma khach hang   : " << maKH << "\n";
+        cout << "  Ho va ten       : " << hoTen << "\n";
+        cout << "  So CCCD         : " << soCCCD << "\n";
+        cout << "  So dien thoai   : " << soDienThoai << "\n";
+        cout << "  Email           : " << (email.empty() ? "(Chua cap nhat)" : email) << "\n";
+        cout << "  Dia chi         : " << diaChi << "\n";
+        cout << "  Ngay dang ky    : " << ngayDangKy << "\n";
+        cout << "  Ma goi kenh     : " << (maGoiKenh.empty() ? "(Chua dang ky goi)" : maGoiKenh) << "\n";
+        cout << "  Trang thai      : " << trangThai << "\n";
+        Display::inDuongKe(65);
+    }
 
-    // Nhap du lieu tu ban phim
-    void nhapDuLieu() override {
+    // In tieu de bang
+    void displayTableHeader() const override {
+        cout << "  " << left
+             << setw(6)  << "STT"
+             << setw(10) << "Ma KH"
+             << setw(24) << "Ho va ten"
+             << setw(14) << "So dien thoai"
+             << setw(14) << "Ngay dang ky"
+             << setw(12) << "Ma goi"
+             << "Trang thai\n";
+        cout << "  " << string(92, '-') << "\n";
+    }
+
+    // Hien thi 1 dong trong bang danh sach
+    void displayTableRow(int stt) const override {
+        string tenShort = (hoTen.size() > 22 ? hoTen.substr(0, 19) + "..." : hoTen);
+        cout << "  " << left
+             << setw(6)  << stt
+             << setw(10) << maKH
+             << setw(24) << tenShort
+             << setw(14) << soDienThoai
+             << setw(14) << ngayDangKy
+             << setw(12) << (maGoiKenh.empty() ? "---" : maGoiKenh)
+             << trangThai << "\n";
+    }
+
+    // Chuyen sang chuoi luu file
+    string toFileString() const override {
+        ostringstream oss;
+        oss << maKH << "|" << hoTen << "|" << soCCCD << "|"
+            << soDienThoai << "|" << email << "|" << diaChi << "|"
+            << ngayDangKy << "|" << maGoiKenh << "|" << trangThai;
+        return oss.str();
+    }
+
+    // Doc tu chuoi trong file
+    void fromFileString(const string& line) override {
+        vector<string> parts = StrUtils::split(line, '|');
+        if (parts.size() < 9)
+            throw InvalidInputException("Dinh dang dong file KhachHang khong hop le: " + line);
+        maKH         = StrUtils::trim(parts[0]);
+        hoTen        = StrUtils::trim(parts[1]);
+        soCCCD       = StrUtils::trim(parts[2]);
+        soDienThoai  = StrUtils::trim(parts[3]);
+        email        = StrUtils::trim(parts[4]);
+        diaChi       = StrUtils::trim(parts[5]);
+        ngayDangKy   = StrUtils::trim(parts[6]);
+        maGoiKenh    = StrUtils::trim(parts[7]);
+        trangThai    = StrUtils::trim(parts[8]);
+    }
+
+    // Nhap du lieu moi tu ban phim
+    void inputData() override {
         cout << "\n  --- NHAP THONG TIN KHACH HANG ---\n";
         cout << "  Ma khach hang (dang KHxxx, VD: KH001): ";
-        string ma;
-        getline(cin, ma);
-        if (ma.empty()) throw InvalidInputException("Ma khach hang khong duoc de trong!");
-        if (ma.size() < 3 || ma.substr(0, 2) != "KH")
+        getline(cin, maKH);
+        maKH = StrUtils::trim(maKH);
+        if (maKH.empty()) throw InvalidInputException("Ma khach hang khong duoc de trong!");
+        if (maKH.size() < 3 || maKH.substr(0, 2) != "KH")
             throw InvalidInputException("Ma khach hang phai co dang KHxxx (VD: KH001)!");
-        id = ma;
 
         setHoTen(InputHelper::nhapChuoiBatBuoc("  Ho va ten: "));
 
-        // Nhap CCCD voi kiem tra
+        // Nhap CCCD
         while (true) {
             try {
                 string cccd = InputHelper::nhapChuoiBatBuoc("  So CCCD (9 hoac 12 so): ");
@@ -172,7 +233,7 @@ public:
             }
         }
 
-        // Nhap SĐT voi kiem tra
+        // Nhap SĐT
         while (true) {
             try {
                 string sdt = InputHelper::nhapChuoiBatBuoc("  So dien thoai (9-11 so): ");
@@ -196,7 +257,7 @@ public:
 
         setDiaChi(InputHelper::nhapChuoiBatBuoc("  Dia chi lap dat: "));
 
-        // Nhap ngay dang ky voi kiem tra
+        // Nhap ngay dang ky
         while (true) {
             try {
                 string ngay = InputHelper::nhapChuoiBatBuoc("  Ngay dang ky (dd/mm/yyyy): ");
@@ -218,71 +279,49 @@ public:
         trangThai = dsTT[tt - 1];
     }
 
-    // Hien thi chi tiet
-    void hienThi() const override {
-        cout << "\n";
-        Display::inDuongKe(65);
-        cout << "  CHI TIET KHACH HANG\n";
-        Display::inDuongKe(65);
-        cout << "  Ma khach hang   : " << id << "\n";
-        cout << "  Ho va ten       : " << hoTen << "\n";
-        cout << "  So CCCD         : " << soCCCD << "\n";
-        cout << "  So dien thoai   : " << soDienThoai << "\n";
-        cout << "  Email           : " << (email.empty() ? "(Chua cap nhat)" : email) << "\n";
-        cout << "  Dia chi         : " << diaChi << "\n";
-        cout << "  Ngay dang ky    : " << ngayDangKy << "\n";
-        cout << "  Ma goi kenh     : " << (maGoiKenh.empty() ? "(Chua dang ky goi)" : maGoiKenh) << "\n";
-        cout << "  Trang thai      : " << trangThai << "\n";
-        Display::inDuongKe(65);
-    }
+    // Cap nhat du lieu (Enter de giu nguyen)
+    void updateData() override {
+        string temp;
+        cout << "  (Nhan Enter de giu nguyen gia tri cu)\n\n";
 
-    // Hien thi 1 dong trong bang danh sach
-    void hienThiDanhSach() const override {
-        string ten = hoTen.size() > 20 ? hoTen.substr(0, 20) : hoTen;
-        cout << "  " << left
-             << setw(8)  << id
-             << setw(22) << ten
-             << setw(13) << soDienThoai
-             << setw(12) << ngayDangKy
-             << setw(10) << (maGoiKenh.empty() ? "---" : maGoiKenh)
-             << trangThai << "\n";
-    }
+        setHoTen(InputHelper::nhapChuoiTuyCon("  Ho va ten", hoTen));
 
-    // Chuyen sang chuoi luu file
-    string toFileString() const override {
-        ostringstream oss;
-        oss << id << "|" << hoTen << "|" << soCCCD << "|"
-            << soDienThoai << "|" << email << "|" << diaChi << "|"
-            << ngayDangKy << "|" << maGoiKenh << "|" << trangThai;
-        return oss.str();
-    }
+        cout << "  So CCCD [" << soCCCD << "]: ";
+        getline(cin, temp);
+        temp = StrUtils::trim(temp);
+        if (!temp.empty()) setSoCCCD(temp);
 
-    // Doc tu chuoi trong file
-    void fromFileString(const string& line) override {
-        vector<string> parts = StrUtils::split(line, '|');
-        if (parts.size() < 9)
-            throw InvalidInputException("Dinh dang dong file KhachHang khong hop le: " + line);
-        id           = StrUtils::trim(parts[0]);
-        hoTen        = StrUtils::trim(parts[1]);
-        soCCCD       = StrUtils::trim(parts[2]);
-        soDienThoai  = StrUtils::trim(parts[3]);
-        email        = StrUtils::trim(parts[4]);
-        diaChi       = StrUtils::trim(parts[5]);
-        ngayDangKy   = StrUtils::trim(parts[6]);
-        maGoiKenh    = StrUtils::trim(parts[7]);
-        trangThai    = StrUtils::trim(parts[8]);
-    }
+        cout << "  So dien thoai [" << soDienThoai << "]: ";
+        getline(cin, temp);
+        temp = StrUtils::trim(temp);
+        if (!temp.empty()) setSoDienThoai(temp);
 
-    // In tieu de bang
-    static void inTieuDeBang() {
-        cout << "  " << left
-             << setw(8)  << "Ma KH"
-             << setw(22) << "Ho va ten"
-             << setw(13) << "Dien thoai"
-             << setw(12) << "Ngay DK"
-             << setw(10) << "Ma goi"
-             << "Trang thai\n";
-        cout << "  " << string(80, '-') << "\n";
+        cout << "  Email [" << email << "]: ";
+        getline(cin, temp);
+        temp = StrUtils::trim(temp);
+        if (!temp.empty()) setEmail(temp);
+
+        setDiaChi(InputHelper::nhapChuoiTuyCon("  Dia chi", diaChi));
+
+        cout << "  Ngay dang ky [" << ngayDangKy << "]: ";
+        getline(cin, temp);
+        temp = StrUtils::trim(temp);
+        if (!temp.empty()) setNgayDangKy(temp);
+
+        cout << "  Ma goi kenh [" << maGoiKenh << "]: ";
+        getline(cin, temp);
+        temp = StrUtils::trim(temp);
+        if (!temp.empty()) maGoiKenh = temp;
+
+        cout << "  Trang thai hien tai: " << trangThai << "\n";
+        cout << "  Trang thai moi:\n"
+             << "    1. Hoat dong\n"
+             << "    2. Tam ngung\n"
+             << "    3. Da huy\n"
+             << "    0. Giu nguyen\n";
+        int tt = InputHelper::nhapInt("  Chon (0-3): ", 0, 3);
+        vector<string> dsTT = {"", "Hoat dong", "Tam ngung", "Da huy"};
+        if (tt > 0) trangThai = dsTT[tt];
     }
 };
 
