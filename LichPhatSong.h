@@ -1,10 +1,6 @@
 /*
  * File   : LichPhatSong.h
  * Tac gia: Duong Duc Manh - MSSV: B24DCVT240
- * Mo ta  : Lop LichPhatSong - doi tuong "Lich phat song" (use case Quan ly lich phat song).
- *          Ke thua Entity. Tham chieu den KenhTruyenHinh qua maKenh_ (khoa ngoai).
- *
- * Dinh dang dong trong file: MaLich|MaKenh|TenChuongTrinh|Ngay|GioBatDau|GioKetThuc|LoaiPhat
  */
 #ifndef LICHPHATSONG_H
 #define LICHPHATSONG_H
