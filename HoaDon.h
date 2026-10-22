@@ -37,6 +37,7 @@ public:
     double getSoTien() const { return soTien; }
     string getTrangThaiThanhToan() const { return trangThaiThanhToan; }
 
+    void setMaHoaDon(const string& v) { maHoaDon = v; }
     void setMaHopDong(const string& v) {
         if (v.empty()) throw invalid_argument("Ma hop dong khong duoc de trong!");
         maHopDong = v;
@@ -45,10 +46,13 @@ public:
         if (v.empty()) throw invalid_argument("Ky cuoc khong duoc de trong!");
         kyCuoc = v;
     }
+    void setNgayLap(const string& v) { ngayLap = v; }
+    void setHanThanhToan(const string& v) { hanThanhToan = v; }
     void setSoTien(double v) {
         if (v < 0) throw invalid_argument("So tien khong duoc am!");
         soTien = v;
     }
+    void setTrangThaiThanhToan(const string& v) { trangThaiThanhToan = v; }
 
     string getId() const override { return maHoaDon; }
     string getDisplayName() const override { return maHopDong + " - " + kyCuoc; }
