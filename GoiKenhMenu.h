@@ -23,16 +23,15 @@ private:
     // ------- 1. THEM MOI -------
     void themGoiKenh() {
         Display::inTieuDe("THEM GOI KENH MOI", 60);
-        GoiKenh gk;
         try {
-            gk.nhapDuLieu();
-            repo.add(gk);
-            Display::inThongBaoOK("Them goi kenh '" + gk.getId() + "' thanh cong!");
-        } catch (const DuplicateIdException& e) {
-            Display::inThongBaoLoi(e.what());
-        } catch (const InvalidInputException& e) {
-            Display::inThongBaoLoi(e.what());
-        } catch (const FileException& e) {
+            GoiKenh gk;
+            gk.inputData();
+            if (repo.add(gk)) {
+                Display::inThongBaoOK("Them goi kenh '" + gk.getId() + "' thanh cong!");
+            } else {
+                Display::inThongBaoLoi("Ma goi kenh '" + gk.getId() + "' da ton tai trong he thong!");
+            }
+        } catch (const exception& e) {
             Display::inThongBaoLoi(e.what());
         }
         Display::nhanPhimDeTiep();
@@ -41,17 +40,7 @@ private:
     // ------- 2. XEM DANH SACH -------
     void xemDanhSach() {
         Display::inTieuDe("DANH SACH GOI KENH", 65);
-        const auto& ds = repo.getAll();
-        if (ds.empty()) {
-            cout << "  (Chua co goi kenh nao trong he thong)\n";
-            Display::nhanPhimDeTiep();
-            return;
-        }
-        GoiKenh::inTieuDeBang();
-        for (const auto& gk : ds) {
-            gk.hienThiDanhSach();
-        }
-        cout << "\n  Tong so: " << ds.size() << " goi kenh.\n";
+        Display::inBang(repo.getAll());
         Display::nhanPhimDeTiep();
     }
 
@@ -69,50 +58,57 @@ private:
         else if (ch == 1) {
             string ma = InputHelper::nhapChuoiBatBuoc("  Nhap ma goi: ");
             GoiKenh* gk = repo.findById(ma);
-            if (gk) gk->hienThi();
+            if (gk) gk->display();
             else Display::inThongBaoLoi("Khong tim thay goi kenh voi ma '" + ma + "'!");
         }
         else if (ch == 2) {
             string ten = InputHelper::nhapChuoiBatBuoc("  Nhap tu khoa ten goi: ");
             string tenLower = StrUtils::toLower(ten);
-            auto kq = repo.findWhere([&tenLower](const GoiKenh& gk) {
-                return StrUtils::toLower(gk.getTenGoi()).find(tenLower) != string::npos;
-            });
+            vector<GoiKenh> kq;
+            for (const auto& gk : repo.getAll()) {
+                if (StrUtils::toLower(gk.getTenGoi()).find(tenLower) != string::npos) {
+                    kq.push_back(gk);
+                }
+            }
             if (kq.empty()) {
                 cout << "  Khong tim thay ket qua phu hop.\n";
             } else {
-                cout << "  Tim thay " << kq.size() << " ket qua:\n\n";
-                GoiKenh::inTieuDeBang();
-                for (auto* gk : kq) gk->hienThiDanhSach();
+                cout << "  Tim thay " << kq.size() << " ket qua:\n";
+                Display::inBang(kq);
             }
         }
         else if (ch == 3) {
             cout << "  Loai goi (Co ban / Nang cao / Premium / VOD): ";
             string loai;
             getline(cin, loai);
-            auto kq = repo.findWhere([&loai](const GoiKenh& gk) {
-                return gk.getLoaiGoi() == loai;
-            });
+            loai = StrUtils::trim(loai);
+            vector<GoiKenh> kq;
+            for (const auto& gk : repo.getAll()) {
+                if (gk.getLoaiGoi() == loai) {
+                    kq.push_back(gk);
+                }
+            }
             if (kq.empty()) {
                 cout << "  Khong co goi kenh loai '" << loai << "'.\n";
             } else {
-                cout << "  Tim thay " << kq.size() << " goi kenh loai '" << loai << "':\n\n";
-                GoiKenh::inTieuDeBang();
-                for (auto* gk : kq) gk->hienThiDanhSach();
+                cout << "  Tim thay " << kq.size() << " goi kenh loai '" << loai << "':\n";
+                Display::inBang(kq);
             }
         }
         else if (ch == 4) {
             double giaMin = InputHelper::nhapDouble("  Gia thue tu (VND): ", 0.0);
             double giaMax = InputHelper::nhapDouble("  Gia thue den (VND): ", giaMin);
-            auto kq = repo.findWhere([giaMin, giaMax](const GoiKenh& gk) {
-                return gk.getGiaThue() >= giaMin && gk.getGiaThue() <= giaMax;
-            });
+            vector<GoiKenh> kq;
+            for (const auto& gk : repo.getAll()) {
+                if (gk.getGiaThue() >= giaMin && gk.getGiaThue() <= giaMax) {
+                    kq.push_back(gk);
+                }
+            }
             if (kq.empty()) {
                 cout << "  Khong co goi kenh trong khoang gia nay.\n";
             } else {
-                cout << "  Tim thay " << kq.size() << " ket qua:\n\n";
-                GoiKenh::inTieuDeBang();
-                for (auto* gk : kq) gk->hienThiDanhSach();
+                cout << "  Tim thay " << kq.size() << " ket qua:\n";
+                Display::inBang(kq);
             }
         }
         Display::nhanPhimDeTiep();
@@ -129,31 +125,36 @@ private:
         int ch = InputHelper::nhapInt("  Lua chon: ", 0, 4);
         if (ch == 0) return;
 
+        vector<GoiKenh> ds = repo.getAll();
+        if (ds.empty()) {
+            cout << "  (Chua co goi kenh nao trong he thong)\n";
+            Display::nhanPhimDeTiep();
+            return;
+        }
+
         if (ch == 1) {
-            repo.sortBy([](const GoiKenh& a, const GoiKenh& b) {
+            sort(ds.begin(), ds.end(), [](const GoiKenh& a, const GoiKenh& b) {
                 return StrUtils::toLower(a.getTenGoi()) < StrUtils::toLower(b.getTenGoi());
             });
             cout << "  Da sap xep theo ten A-Z.\n";
         } else if (ch == 2) {
-            repo.sortBy([](const GoiKenh& a, const GoiKenh& b) {
+            sort(ds.begin(), ds.end(), [](const GoiKenh& a, const GoiKenh& b) {
                 return a.getGiaThue() < b.getGiaThue();
             });
             cout << "  Da sap xep theo gia tang dan.\n";
         } else if (ch == 3) {
-            repo.sortBy([](const GoiKenh& a, const GoiKenh& b) {
+            sort(ds.begin(), ds.end(), [](const GoiKenh& a, const GoiKenh& b) {
                 return a.getGiaThue() > b.getGiaThue();
             });
             cout << "  Da sap xep theo gia giam dan.\n";
         } else if (ch == 4) {
-            repo.sortBy([](const GoiKenh& a, const GoiKenh& b) {
+            sort(ds.begin(), ds.end(), [](const GoiKenh& a, const GoiKenh& b) {
                 return a.getSoKenh() < b.getSoKenh();
             });
             cout << "  Da sap xep theo so kenh tang dan.\n";
         }
-        // Hien thi ket qua sau khi sap xep
-        cout << "\n";
-        GoiKenh::inTieuDeBang();
-        for (const auto& gk : repo.getAll()) gk.hienThiDanhSach();
+
+        Display::inBang(ds);
         Display::nhanPhimDeTiep();
     }
 
@@ -167,59 +168,35 @@ private:
             Display::nhanPhimDeTiep();
             return;
         }
-        gk->hienThi();
-        cout << "  (Nhan Enter de giu nguyen gia tri cu)\n\n";
+
+        gk->display();
+        GoiKenh backup = *gk;
 
         try {
-            // Cap nhat tung truong, bo trong = giu nguyen
-            gk->setTenGoi(InputHelper::nhapChuoiTuyCon("  Ten goi kenh", gk->getTenGoi()));
-            gk->setMoTa(InputHelper::nhapChuoiTuyCon("  Mo ta", gk->getMoTa()));
-
-            // Loai goi
-            cout << "  Loai goi hien tai: " << gk->getLoaiGoi() << "\n";
-            cout << "  Loai moi (Co ban/Nang cao/Premium/VOD, Enter de giu): ";
-            string loaiMoi;
-            getline(cin, loaiMoi);
-            if (!loaiMoi.empty()) gk->setLoaiGoi(loaiMoi);
-
-            gk->setGiaThue(InputHelper::nhapDoubleTuyCon("  Gia thue (VND/thang)", gk->getGiaThue(), 0.01));
-            gk->setSoKenh(InputHelper::nhapIntTuyCon("  So luong kenh", gk->getSoKenh(), 0, 9999));
-
-            // Trang thai
-            cout << "  Trang thai hien tai: " << gk->getTrangThai() << "\n";
-            cout << "  Trang thai moi:\n"
-                 << "    1. Dang cung cap\n"
-                 << "    2. Ngung cung cap\n"
-                 << "    0. Giu nguyen\n";
-            int tt = InputHelper::nhapInt("  Chon (0-2): ", 0, 2);
-            if (tt == 1) gk->setTrangThai("Dang cung cap");
-            else if (tt == 2) gk->setTrangThai("Ngung cung cap");
-
-            repo.update(*gk);
+            gk->updateData();
+            repo.saveAfterUpdate();
             Display::inThongBaoOK("Cap nhat goi kenh '" + ma + "' thanh cong!");
-        } catch (const InvalidInputException& e) {
-            Display::inThongBaoLoi(e.what());
-        } catch (const FileException& e) {
+        } catch (const exception& e) {
+            *gk = backup;
             Display::inThongBaoLoi(e.what());
         }
         Display::nhanPhimDeTiep();
     }
 
     // ------- 6. XOA -------
-    void xoaGoiKenh(Repository<GoiKenh>& goiKenhRepo,
-                    function<bool(const string&)> ktraKhachHangDungGoi) {
+    void xoaGoiKenh(function<bool(const string&)> ktraKhachHangDungGoi) {
         Display::inTieuDe("XOA GOI KENH", 60);
         string ma = InputHelper::nhapChuoiBatBuoc("  Nhap ma goi kenh can xoa: ");
-        GoiKenh* gk = goiKenhRepo.findById(ma);
+        GoiKenh* gk = repo.findById(ma);
         if (!gk) {
             Display::inThongBaoLoi("Khong tim thay goi kenh voi ma '" + ma + "'!");
             Display::nhanPhimDeTiep();
             return;
         }
-        gk->hienThi();
+        gk->display();
 
         // Kiem tra rang buoc: co khach hang nao dang dung goi nay khong?
-        if (ktraKhachHangDungGoi(ma)) {
+        if (ktraKhachHangDungGoi && ktraKhachHangDungGoi(ma)) {
             Display::inThongBaoLoi("Khong the xoa! Con khach hang dang su dung goi kenh nay.");
             Display::nhanPhimDeTiep();
             return;
@@ -232,8 +209,11 @@ private:
         }
 
         try {
-            goiKenhRepo.remove(ma);
-            Display::inThongBaoOK("Xoa goi kenh '" + ma + "' thanh cong!");
+            if (repo.remove(ma)) {
+                Display::inThongBaoOK("Xoa goi kenh '" + ma + "' thanh cong!");
+            } else {
+                Display::inThongBaoLoi("Xoa that bai!");
+            }
         } catch (const exception& e) {
             Display::inThongBaoLoi(e.what());
         }
@@ -243,8 +223,12 @@ private:
 public:
     GoiKenhMenu(Repository<GoiKenh>& r) : repo(r) {}
 
+    void chay(function<bool(const string&)> ktraKhachHangDungGoi = nullptr) {
+        hienThiMenu(ktraKhachHangDungGoi);
+    }
+
     // Ham hien thi menu va xu ly
-    void hienThiMenu(function<bool(const string&)> ktraKhachHangDungGoi) {
+    void hienThiMenu(function<bool(const string&)> ktraKhachHangDungGoi = nullptr) {
         int luaChon;
         do {
             Display::inTieuDe("QUAN LY GOI KENH TRUYEN HINH", 60);
@@ -264,7 +248,7 @@ public:
                 case 3: timKiem(); break;
                 case 4: sapXep(); break;
                 case 5: capNhat(); break;
-                case 6: xoaGoiKenh(repo, ktraKhachHangDungGoi); break;
+                case 6: xoaGoiKenh(ktraKhachHangDungGoi); break;
                 case 0: break;
             }
         } while (luaChon != 0);
