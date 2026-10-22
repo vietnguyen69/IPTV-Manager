@@ -1,509 +1,183 @@
+/*
+ * =====================================================================================
+ * Kien truc:
+ *  - Entity.h: Interface lop co so thuan ao cho tat ca cac doi tuong (10 entities)
+ *  - Repository.h: Lop mau Repository<T> quan ly danh sach va doc/ghi file
+ *  - CommonUI.h & Utils.h: Tien ich giao dien console, nhap lieu va bang bieu
+ *  - 10 Use Cases (Model + Menu):
+ *      1. TheLoaiKenh       & TheLoaiKenhMenu
+ *      2. NoiDungVOD        & NoiDungVODMenu
+ *      3. KenhTruyenHinh    & KenhTruyenHinhMenu
+ *      4. LichPhatSong      & LichPhatSongMenu
+ *      5. GoiKenh           & GoiKenhMenu
+ *      6. KhachHang         & KhachHangMenu
+ *      7. SetTopBox         & SetTopBoxMenu
+ *      8. PhieuHoTro        & PhieuHoTroMenu
+ *      9. HopDong           & HopDongMenu
+ *     10. HoaDon            & HoaDonMenu
+ * =====================================================================================
+ */
+
 #include <iostream>
 #include <string>
 #include <vector>
-#include <iomanip>
-#include <limits>
+#include <functional>
 #include <cstdlib>
 
 #include "Entity.h"
 #include "Repository.h"
-#include "NoiDungVOD.h"
-#include "TheLoaiKenh.h"
+#include "CommonUI.h"
+#include "Utils.h"
 
+#include "TheLoaiKenh.h"
+#include "NoiDungVOD.h"
+#include "KenhTruyenHinh.h"
+#include "LichPhatSong.h"
 #include "GoiKenh.h"
-#include "GoiKenhMenu.h"
 #include "KhachHang.h"
+#include "SetTopBox.h"
+#include "PhieuHoTro.h"
+#include "HopDong.h"
+#include "HoaDon.h"
+
+// 10 Menus
+#include "TheLoaiKenhMenu.h"
+#include "NoiDungVODMenu.h"
+#include "KenhTruyenHinhMenu.h"
+#include "LichPhatSongMenu.h"
+#include "GoiKenhMenu.h"
 #include "KhachHangMenu.h"
+#include "SetTopBoxMenu.h"
+#include "PhieuHoTroMenu.h"
+#include "HopDongMenu.h"
+#include "HoaDonMenu.h"
 
 using namespace std;
 
-Repository<NoiDungVOD>		repoVOD("data/noidungvod.txt")
-Repository<TheLoaiKenh>		repoTheLoai("data/theloaikenh.txt")
-
-const string FILE_GOI_KENH   = "data/goi_kenh.txt";
-const string FILE_KHACH_HANG = "data/khach_hang.txt";
-
-void clearScreen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
-
-void pauseScreen() {
-    cout << "\n  Nhan Enter de tiep tuc...";
-    string dummy;
-    getline(cin, dummy);
-}
-
-void printTitle(const string& title) {
-    cout << "\n  " << string(58, '=') << endl;
-    cout << "    " << title << endl;
-    cout << "  " << string(58, '=') << endl;
-}
-
-void printLine() {
-    cout << "  " << string(58, '-') << endl;
-}
-
-template <typename T>
-void displayTable(const vector<T>& items) {
-    if (items.empty()) {
-        cout << "\n  [Danh sach trong!]" << endl;
-        return;
-    }
-    cout << endl;
-    items[0].displayTableHeader();
-    for (size_t i = 0; i < items.size(); i++) {
-        items[i].displayTableRow((int)(i + 1));
-    }
-    cout << "\n  Tong cong: " << items.size() << " ban ghi." << endl;
-}
-
-//1. Quan ly noi dung VOD
-//Them the loai
-void themTheLoai() {
-    printTitle("THEM THE LOAI KENH MOI");
-    try {
-        TheLoaiKenh tl;
-        tl.inputData();  // Nhap du lieu tu ban phim
-
-        if (repoTheLoai.add(tl)) {
-            cout << "\n  >> Them the loai kenh thanh cong!" << endl;
-        } else {
-            cout << "\n  [LOI] Ma the loai '" << tl.getId()
-                 << "' da ton tai!" << endl;
-        }
-    } catch (const invalid_argument& e) {
-        cout << "\n  [LOI] Du lieu khong hop le: " << e.what() << endl;
-    } catch (const exception& e) {
-        cout << "\n  [LOI] " << e.what() << endl;
-    }
-}
-
-//Hien thi danh sach the loai
-void hienThiTheLoai() {
-    printTitle("DANH SACH THE LOAI KENH");
-    displayTable(repoTheLoai.getAll());
-}
-
-//Tim kiem the loai
-void timKiemTheLoai() {
-    printTitle("TIM KIEM THE LOAI KENH");
-    string keyword;
-    cout << "\n  Nhap tu khoa (ma hoac ten): ";
-    getline(cin, keyword);
-
-    if (keyword.empty()) {
-        cout << "\n  [LOI] Tu khoa khong duoc de trong!" << endl;
-        return;
-    }
-
-    vector<TheLoaiKenh> results = repoTheLoai.search(keyword);
-    cout << "\n  Ket qua tim kiem cho '" << keyword << "':";
-    displayTable(results);
-}
-
-//Cap nhat the loai
-void capNhatTheLoai() {
-    printTitle("CAP NHAT THE LOAI KENH");
-    string id;
-    cout << "\n  Nhap ma the loai can cap nhat: ";
-    getline(cin, id);
-
-    TheLoaiKenh* found = repoTheLoai.findById(id);
-    if (found == nullptr) {
-        cout << "\n  [LOI] Khong tim thay the loai voi ma '" << id
-             << "'!" << endl;
-        return;
-    }
-
-    cout << "\n  --- Thong tin hien tai ---" << endl;
-    found->display();
-    cout << "\n  --- Nhap thong tin moi ---" << endl;
-
-    try {
-        found->updateData();             // Sua truc tiep qua con tro
-        repoTheLoai.saveAfterUpdate();   // Ghi lai xuong file
-        cout << "\n  >> Cap nhat thanh cong!" << endl;
-    } catch (const exception& e) {
-        cout << "\n  [LOI] " << e.what() << endl;
-        repoTheLoai.loadFromFile();      // Huy thay doi, tai lai tu file
-    }
-}
-
-//Xoa the loai
-void xoaTheLoai() {
-    printTitle("XOA THE LOAI KENH");
-    string id;
-    cout << "\n  Nhap ma the loai can xoa: ";
-    getline(cin, id);
-
-    TheLoaiKenh* found = repoTheLoai.findById(id);
-    if (found == nullptr) {
-        cout << "\n  [LOI] Khong tim thay the loai voi ma '" << id
-             << "'!" << endl;
-        return;
-    }
-
-    cout << "\n  --- Thong tin se bi xoa ---" << endl;
-    found->display();
-
-    // Kiem tra rang buoc: co noi dung VOD nao dang dung the loai nay khong?
-    bool dangSuDung = false;
-    for (const auto& vod : repoVOD.getAll()) {
-        if (vod.getMaTheLoai() == id) {
-            dangSuDung = true;
-            break;
-        }
-    }
-
-    if (dangSuDung) {
-        cout << "\n  [LOI] Khong the xoa! Co noi dung VOD dang su dung "
-             << "the loai nay." << endl;
-        cout << "  Hay xoa hoac doi the loai cua cac VOD truoc." << endl;
-        return;
-    }
-
-    // Xac nhan xoa
-    string confirm;
-    cout << "\n  Ban co chac chan muon xoa? (Y/N): ";
-    getline(cin, confirm);
-
-    if (confirm == "Y" || confirm == "y") {
-        if (repoTheLoai.remove(id)) {
-            cout << "\n  >> Xoa thanh cong!" << endl;
-        } else {
-            cout << "\n  [LOI] Xoa that bai!" << endl;
-        }
-    } else {
-        cout << "\n  >> Da huy thao tac xoa." << endl;
-    }
-}
-
-//Menu the loai kenh
-void menuTheLoai() {
-    int choice = -1;
-    do {
-        clearScreen();
-        printTitle("QUAN LY THE LOAI KENH");
-        cout << "\n  1. Them the loai kenh" << endl;
-        cout << "  2. Hien thi danh sach" << endl;
-        cout << "  3. Tim kiem" << endl;
-        cout << "  4. Cap nhat thong tin" << endl;
-        cout << "  5. Xoa the loai" << endl;
-        cout << "  0. << Quay lai menu chinh" << endl;
-        printLine();
-        cout << "  Lua chon cua ban: ";
-
-        string input;
-        getline(cin, input);
-
-        try {
-            choice = stoi(input);
-        } catch (...) {
-            cout << "\n  [LOI] Vui long nhap mot so!" << endl;
-            pauseScreen();
-            continue;
-        }
-
-        switch (choice) {
-            case 1: themTheLoai();    pauseScreen(); break;
-            case 2: hienThiTheLoai(); pauseScreen(); break;
-            case 3: timKiemTheLoai(); pauseScreen(); break;
-            case 4: capNhatTheLoai(); pauseScreen(); break;
-            case 5: xoaTheLoai();     pauseScreen(); break;
-            case 0: break;
-            default:
-                cout << "\n  [LOI] Lua chon khong hop le (0-5)!" << endl;
-                pauseScreen();
-        }
-    } while (choice != 0);
-}
-
-
-//2. Noi dung VOD
-//Them noi dung VOD
-void themVOD() {
-    printTitle("THEM NOI DUNG VOD MOI");
-
-    // Kiem tra da co the loai kenh chua
-    if (repoTheLoai.isEmpty()) {
-        cout << "\n  [CANH BAO] Chua co the loai kenh nao trong he thong!"
-             << endl;
-        cout << "  Hay them the loai kenh truoc khi them noi dung VOD."
-             << endl;
-        return;
-    }
-
-    // Hien thi danh sach the loai de nguoi dung tham khao
-    cout << "\n  --- Danh sach the loai hien co ---";
-    displayTable(repoTheLoai.getAll());
-
-    cout << endl;
-    try {
-        NoiDungVOD vod;
-        vod.inputData();  // Nhap du lieu
-
-        // Kiem tra ma the loai co ton tai khong (rang buoc khoa ngoai)
-        if (repoTheLoai.findById(vod.getMaTheLoai()) == nullptr) {
-            throw invalid_argument(
-                "Ma the loai '" + vod.getMaTheLoai() + "' khong ton tai! "
-                "Hay chon ma the loai tu danh sach phia tren."
-            );
-        }
-
-        if (repoVOD.add(vod)) {
-            cout << "\n  >> Them noi dung VOD thanh cong!" << endl;
-        } else {
-            cout << "\n  [LOI] Ma VOD '" << vod.getId()
-                 << "' da ton tai!" << endl;
-        }
-    } catch (const invalid_argument& e) {
-        cout << "\n  [LOI] Du lieu khong hop le: " << e.what() << endl;
-    } catch (const exception& e) {
-        cout << "\n  [LOI] " << e.what() << endl;
-    }
-}
-
-//Hien thi danh sach VOD
-void hienThiVOD() {
-    printTitle("DANH SACH NOI DUNG VOD");
-    displayTable(repoVOD.getAll());
-}
-
-//Tim kiem VOD
-void timKiemVOD() {
-    printTitle("TIM KIEM NOI DUNG VOD");
-    string keyword;
-    cout << "\n  Nhap tu khoa (ma hoac tieu de): ";
-    getline(cin, keyword);
-
-    if (keyword.empty()) {
-        cout << "\n  [LOI] Tu khoa khong duoc de trong!" << endl;
-        return;
-    }
-
-    vector<NoiDungVOD> results = repoVOD.search(keyword);
-    cout << "\n  Ket qua tim kiem cho '" << keyword << "':";
-    displayTable(results);
-}
-
-//Cap nhat VOD
-void capNhatVOD() {
-    printTitle("CAP NHAT NOI DUNG VOD");
-    string id;
-    cout << "\n  Nhap ma VOD can cap nhat: ";
-    getline(cin, id);
-
-    NoiDungVOD* found = repoVOD.findById(id);
-    if (found == nullptr) {
-        cout << "\n  [LOI] Khong tim thay noi dung VOD voi ma '" << id
-             << "'!" << endl;
-        return;
-    }
-
-    cout << "\n  --- Thong tin hien tai ---" << endl;
-    found->display();
-
-    // Hien thi danh sach the loai de tham khao
-    cout << "\n  --- Danh sach the loai hien co ---";
-    displayTable(repoTheLoai.getAll());
-
-    cout << "\n  --- Nhap thong tin moi ---" << endl;
-
-    // Luu ban sao de phuc hoi neu loi
-    NoiDungVOD backup = *found;
-
-    try {
-        found->updateData();  // Sua truc tiep qua con tro
-
-        // Kiem tra ma the loai moi co ton tai khong
-        if (repoTheLoai.findById(found->getMaTheLoai()) == nullptr) {
-            *found = backup;  // Phuc hoi ban sao
-            throw invalid_argument(
-                "Ma the loai '" + found->getMaTheLoai() + "' khong ton tai!"
-            );
-        }
-
-        repoVOD.saveAfterUpdate();  // Ghi lai xuong file
-        cout << "\n  >> Cap nhat thanh cong!" << endl;
-    } catch (const exception& e) {
-        *found = backup;  // Phuc hoi ban sao khi co loi
-        cout << "\n  [LOI] " << e.what() << endl;
-        cout << "  Thay doi da duoc huy bo." << endl;
-    }
-}
-
-//Xoa VOD
-void xoaVOD() {
-    printTitle("XOA NOI DUNG VOD");
-    string id;
-    cout << "\n  Nhap ma VOD can xoa: ";
-    getline(cin, id);
-
-    NoiDungVOD* found = repoVOD.findById(id);
-    if (found == nullptr) {
-        cout << "\n  [LOI] Khong tim thay noi dung VOD voi ma '" << id
-             << "'!" << endl;
-        return;
-    }
-
-    cout << "\n  --- Thong tin se bi xoa ---" << endl;
-    found->display();
-
-    // Xac nhan xoa
-    string confirm;
-    cout << "\n  Ban co chac chan muon xoa? (Y/N): ";
-    getline(cin, confirm);
-
-    if (confirm == "Y" || confirm == "y") {
-        if (repoVOD.remove(id)) {
-            cout << "\n  >> Xoa thanh cong!" << endl;
-        } else {
-            cout << "\n  [LOI] Xoa that bai!" << endl;
-        }
-    } else {
-        cout << "\n  >> Da huy thao tac xoa." << endl;
-    }
-}
-
-//Menu noi dung VOD
-void menuVOD() {
-    int choice = -1;
-    do {
-        clearScreen();
-        printTitle("QUAN LY NOI DUNG VOD");
-        cout << "\n  1. Them noi dung VOD" << endl;
-        cout << "  2. Hien thi danh sach" << endl;
-        cout << "  3. Tim kiem" << endl;
-        cout << "  4. Cap nhat thong tin" << endl;
-        cout << "  5. Xoa noi dung VOD" << endl;
-        cout << "  0. << Quay lai menu chinh" << endl;
-        printLine();
-        cout << "  Lua chon cua ban: ";
-
-        string input;
-        getline(cin, input);
-
-        try {
-            choice = stoi(input);
-        } catch (...) {
-            cout << "\n  [LOI] Vui long nhap mot so!" << endl;
-            pauseScreen();
-            continue;
-        }
-
-        switch (choice) {
-            case 1: themVOD();    pauseScreen(); break;
-            case 2: hienThiVOD(); pauseScreen(); break;
-            case 3: timKiemVOD(); pauseScreen(); break;
-            case 4: capNhatVOD(); pauseScreen(); break;
-            case 5: xoaVOD();     pauseScreen(); break;
-            case 0: break;
-            default:
-                cout << "\n  [LOI] Lua chon khong hop le (0-5)!" << endl;
-                pauseScreen();
-        }
-    } while (choice != 0);
-}
-
-// Menu chinh
-void hienThi() {
-    Display::inDuongKe(65);
-    cout << "      HE THONG QUAN LY DICH VU TRUYEN HINH SO/IPTV\n";
-    Display::inDuongKe(65);
-    cout << "  De tai 7 - Ky thuat lap trinh\n";
-    cout << "  Thuc hien: Goi Kenh & Khach Hang\n";
-    Display::inDuongKe(65);
-    cout << "  1. Quan ly Goi Kenh\n";
-    cout << "  2. Quan ly Khach Hang\n";
-    cout << "  0. Thoat chuong trinh\n";
-    Display::inDuongKe(65);
+void inMenuChinh() {
+    clearScreen();
+    cout << "\n  ====================================================================\n";
+    cout << "             HE THONG QUAN LY DICH VU TRUYEN HINH SO / IPTV           \n";
+    cout << "  ====================================================================\n";
+    cout << "    1.  Quan ly The loai kenh\n";
+    cout << "    2.  Quan ly Noi dung VOD (Video On Demand)\n";
+    cout << "    3.  Quan ly Kenh truyen hinh\n";
+    cout << "    4.  Quan ly Lich phat song\n";
+    cout << "    5.  Quan ly Goi kenh truyen hinh\n";
+    cout << "    6.  Quan ly Khach hang\n";
+    cout << "    7.  Quan ly Thiet bi Set-Top-Box (STB)\n";
+    cout << "    8.  Quan ly Phieu ho tro ky thuat\n";
+    cout << "    9.  Quan ly Hop dong IPTV\n";
+    cout << "    10. Quan ly Hoa don va Thanh toan\n";
+    cout << "    0.  Thoat chuong trinh\n";
+    cout << "  --------------------------------------------------------------------\n";
 }
 
 int main() {
-    #ifdef _WIN32
-        system("chcp 65001 > nul"); // Ho tro tieng Viet console
-    #endif
+    // 1. Khoi tao 10 Repository gan voi cac file du lieu trong thu muc data/
+    Repository<TheLoaiKenh>    repoTheLoai("data/theloaikenh.txt");
+    Repository<NoiDungVOD>     repoVOD("data/noidungvod.txt");
+    Repository<KenhTruyenHinh> repoKenh("data/kenhtruyenhinh.txt");
+    Repository<LichPhatSong>   repoLichPS("data/lichphatsong.txt");
+    Repository<GoiKenh>        repoGoiKenh("data/goi_kenh.txt");
+    Repository<KhachHang>      repoKhachHang("data/khach_hang.txt");
+    Repository<SetTopBox>      repoSTB("data/settopbox.txt");
+    Repository<PhieuHoTro>     repoPhieuHoTro("data/phieuhotro.txt");
+    Repository<HopDong>        repoHopDong("data/hopdong.txt");
+    Repository<HoaDon>         repoHoaDon("data/hoadon.txt");
 
-    int choice = -1;
-    do {
-        clearScreen();
-        cout << endl;
-        cout << "  ==========================================================" << endl;
-        cout << "  |        HE THONG QUAN LY DICH VU TRUYEN HINH (IPTV)     |" << endl;
-        cout << "  ==========================================================" << endl;
-        cout << endl;
-        
-        cout << "  0. Thoat chuong trinh" << endl;
-        cout << "  ----------------------------------------------------------" << endl;
-        cout << "  Lua chon cua ban: ";
-
-        string input;
-        getline(cin, input);
-
-        try {
-            choice = stoi(input);
-        } catch (...) {
-            cout << "\n  [LOI] Vui long nhap mot so!" << endl;
-            pauseScreen();
-            continue;
+    // 2. Thiet lap cac ham callback kiem tra rang buoc khoa ngoai
+    auto ktraGoi = [&repoKhachHang](const string& maGoi) -> bool {
+        const auto& dsKH = repoKhachHang.getAll();
+        for (const auto& kh : dsKH) {
+            if (kh.getMaGoiKenh() == maGoi) return true;
         }
-
-        switch (choice) {
-            
-            case 0:
-                cout << "\n  Cam on ban da su dung chuong trinh! Tam biet!" << endl;
-                break;
-            default:
-                cout << "\n  [LOI] Lua chon khong hop le!" << endl;
-                pauseScreen();
-        }
-    } while (choice != 0);
-
-        // Khoi tao cac Repository
-    Repository<GoiKenh>   repoGK(FILE_GOI_KENH);
-    Repository<KhachHang> repoKH(FILE_KHACH_HANG);
-
-    // Nap du lieu tu file
-    try {
-        cout << "  Dang nap du lieu tu file...\n";
-        repoGK.loadFromFile();
-        cout << "  + Goi kenh: " << repoGK.count() << " ban ghi.\n";
-        repoKH.loadFromFile();
-        cout << "  + Khach hang: " << repoKH.count() << " ban ghi.\n";
-        cout << "  Nap du lieu thanh cong!\n\n";
-    } catch (const FileException& e) {
-        cerr << "  [LOI] " << e.what() << "\n";
-        return 1;
-    }
-
-    // Khoi tao cac menu
-    GoiKenhMenu   menuGK(repoGK);
-    KhachHangMenu menuKH(repoKH, repoGK);
-
-    // Lambda kiem tra rang buoc goi kenh - khach hang
-    auto ktraGoi = [&repoKH](const string& maGoi) -> bool {
-        return ktraKhachHangDungGoi(repoKH, maGoi);
+        return false;
     };
 
-    // Vong lap menu chinh
-    int luaChon;
+    auto khTonTai = [&repoKhachHang](const string& maKH) -> bool {
+        if (maKH.empty()) return true;
+        return repoKhachHang.findById(maKH) != nullptr;
+    };
+
+    auto coPhieuHoTro = [&repoPhieuHoTro](const string& maSTB) -> bool {
+        const auto& dsPhieu = repoPhieuHoTro.getAll();
+        for (const auto& p : dsPhieu) {
+            if (p.getMaSTB() == maSTB) return true;
+        }
+        return false;
+    };
+
+    auto stbTonTai = [&repoSTB](const string& maSTB) -> bool {
+        if (maSTB.empty()) return false;
+        return repoSTB.findById(maSTB) != nullptr;
+    };
+
+    // 3. Khoi tao 10 Menu usecase tuong ung
+    TheLoaiKenhMenu    menuTheLoai(repoTheLoai, repoVOD);
+    NoiDungVODMenu     menuVOD(repoVOD, repoTheLoai);
+    KenhTruyenHinhMenu menuKenh(repoKenh, repoTheLoai, repoLichPS);
+    LichPhatSongMenu   menuLichPS(repoLichPS, repoKenh);
+    GoiKenhMenu        menuGoiKenh(repoGoiKenh);
+    KhachHangMenu      menuKhachHang(repoKhachHang, repoGoiKenh);
+    SetTopBoxMenu      menuSTB(repoSTB, khTonTai, coPhieuHoTro);
+    PhieuHoTroMenu     menuPhieuHoTro(repoPhieuHoTro, stbTonTai);
+    HopDongMenu        menuHopDong(repoHopDong, repoHoaDon, khTonTai);
+    HoaDonMenu         menuHoaDon(repoHoaDon, repoHopDong);
+
+    // 4. Vong lap dieu huong menu chinh
+    int luaChon = -1;
     do {
-        hienThiMenuChinh();
-        luaChon = InputHelper::nhapInt("  Nhap lua chon: ", 0, 2);
+        inMenuChinh();
+        cout << "  Nhap lua chon cua ban (0-10): ";
+        string input;
+        getline(cin, input);
+        try {
+            luaChon = stoi(input);
+        } catch (...) {
+            luaChon = -1;
+        }
 
         switch (luaChon) {
             case 1:
-                menuGK.hienThiMenu(ktraGoi);
+                menuTheLoai.chay();
                 break;
             case 2:
-                menuKH.hienThiMenu();
+                menuVOD.chay();
+                break;
+            case 3:
+                menuKenh.chay();
+                break;
+            case 4:
+                menuLichPS.chay();
+                break;
+            case 5:
+                menuGoiKenh.chay(ktraGoi);
+                break;
+            case 6:
+                menuKhachHang.chay();
+                break;
+            case 7:
+                menuSTB.chay();
+                break;
+            case 8:
+                menuPhieuHoTro.chay();
+                break;
+            case 9:
+                menuHopDong.chay();
+                break;
+            case 10:
+                menuHoaDon.chay();
                 break;
             case 0:
-                cout << "\n  Cam on ban da su dung he thong. Tam biet!\n\n";
+                cout << "\n  ======================================================\n";
+                cout << "    Cam on ban da su dung he thong IPTV Manager!\n";
+                cout << "    Chuong trinh ket thuc. Tam biet!\n";
+                cout << "  ======================================================\n\n";
+                break;
+            default:
+                cout << "\n  [LOI] Lua chon khong hop le! Vui long nhap so tu 0 den 10.\n";
+                pauseScreen();
                 break;
         }
     } while (luaChon != 0);
