@@ -1,0 +1,10 @@
+HT001|STB001|Thiet bi bi treo man hinh khi xem kenh HD|3|15/01/2026
+HT002|STB002|Dieu khien tu xa khong nhan tin hieu hong ngoai|3|10/02/2026
+HT003|STB003|Hinh anh bi giat lag va mat am thanh tren kenh VTV1|2|05/03/2026
+HT004|STB004|Khong ket noi duoc voi mang Wifi gia dinh|3|20/03/2026
+HT005|STB005|Dau thu STB bi nong bat thuong sau 2 gio su dung|2|28/03/2026
+HT006|STB006|Bao loi ma loi ERR-104 khi mo kho phim VOD|1|10/04/2026
+HT007|STB007|Khong nhan tin hieu HDMI len tivi Sony|3|25/04/2026
+HT008|STB008|Yeu cau nang cap phan mem firmware moi nhat|2|08/05/2026
+HT009|STB009|Mat danh sach kenh yeu thich sau khi khoi dong lai|1|20/05/2026
+HT010|STB012|Nguon dien chap chon bi set danh khong len nguon|2|05/06/2026

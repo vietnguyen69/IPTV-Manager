@@ -1,0 +1,10 @@
+KH001|Nguyen Van An|001200001234|0912345678|an.nguyen@gmail.com|123 Pho Hue, Hai Ba Trung, Ha Noi|10/01/2026|GK02|Hoat dong
+KH002|Tran Thi Binh|001200005678|0987654321|binh.tran@gmail.com|45 Cau Giay, Quan Cau Giay, Ha Noi|15/02/2026|GK03|Hoat dong
+KH003|Le Hoang Cuong|001200009999|0903112233|cuong.le@gmail.com|78 Nguyen Trai, Thanh Xuan, Ha Noi|01/03/2026|GK01|Hoat dong
+KH004|Pham Minh Duc|001200004321|0934567890|duc.pham@gmail.com|12 Hoang Hoa Tham, Ba Dinh, Ha Noi|12/03/2026|GK04|Hoat dong
+KH005|Hoang Thu Ha|001200008765|0978123456|ha.hoang@gmail.com|88 Tran Phu, Ha Dong, Ha Noi|20/03/2026|GK05|Hoat dong
+KH006|Vu Quoc Khanh|001200006789|0945678123|khanh.vu@gmail.com|56 Le Duan, Hoan Kiem, Ha Noi|05/04/2026|GK03|Hoat dong
+KH007|Do Bich Lien|001200003456|0967890123|lien.do@gmail.com|23 Lac Long Quan, Tay Ho, Ha Noi|18/04/2026|GK02|Hoat dong
+KH008|Ngo Tien Manh|001200007890|0918234567|manh.ngo@gmail.com|90 Truong Chinh, Dong Da, Ha Noi|02/05/2026|GK07|Hoat dong
+KH009|Bui Thuy Nga|001200002345|0981234567|nga.bui@gmail.com|34 Vo Thi Sau, Hai Ba Trung, Ha Noi|14/05/2026|GK06|Hoat dong
+KH010|Dinh Quang Phuc|001200006543|0909876543|phuc.dinh@gmail.com|102 Kim Ma, Ba Dinh, Ha Noi|01/06/2026|GK08|Hoat dong

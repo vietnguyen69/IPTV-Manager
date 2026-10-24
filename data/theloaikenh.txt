@@ -1,0 +1,10 @@
+TL01|Tin tuc|Cac kenh tin tuc thoi su chinh luan trong nuoc va quoc te
+TL02|The thao|Bong da truc tiep, quan vot, ngoai hang Anh, the thao tong hop
+TL03|Phim truyen|Phim dien anh, phim truyen hinh chieu rap va dai tap
+TL04|Khoa hoc - Kham pha|The gioi tu nhien, dong vat hoang da, cong nghe va vu tru
+TL05|Giai tri|Gameshow truyen hinh thuc te, ca nhac, hai kich tong hop
+TL06|Thieu nhi|Phim hoat hinh, chuong trinh giao duc va thieu nhi vui nhon
+TL07|Am nhac|Kenh ca nhac tre, nhac quoc te, MTV va liveshow dinh cao
+TL08|Kinh te - Tai chinh|Thong tin thi truong, chung khoan, bat dong san va doanh nghiep
+TL09|Giao duc - Doi song|Suc khoe, am thuc, du lich, khoa hoc doi song va ky nang
+TL10|Phim tai lieu|Phim tai lieu lich su, van hoa xa hoi, chien tranh va danh nhan

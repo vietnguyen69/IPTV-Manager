@@ -1,0 +1,12 @@
+K001|VTV1 HD|TL01|HD|Tieng Viet|Kenh thoi su chinh luan quoc gia cua Dai Truyen hinh Viet Nam
+K002|VTV3 HD|TL05|HD|Tieng Viet|Kenh the thao giai tri tong hop danh cho moi lua tuoi
+K003|K+ SPORT 1|TL02|4K|Tieng Viet|Kenh the thao dinh cao truc tiep Ngoai Hang Anh va quan vot
+K004|Discovery HD|TL04|Full HD|Tieng Anh|Kenh truyen hinh khoa hoc va kham pha the gioi tu nhien
+K005|Cartoon Network|TL06|HD|Tieng Viet|Kenh phim hoat hinh thieu nhi quoc te long tieng Viet
+K006|HTV7 HD|TL05|HD|Tieng Viet|Kenh giai tri gameshow ca nhac tong hop cua Dai Truyen hinh TPHCM
+K007|HBO HD|TL03|Full HD|Tieng Anh|Kenh phim truyen dien anh bom tan Hollywood phu de tieng Viet
+K008|Fox Sports HD|TL02|HD|Tieng Anh|Kenh truyen hinh the thao quoc te dua xe F1 va giai dau danh gia
+K009|MTV Vietnam|TL07|HD|Tieng Viet|Kenh am nhac tre BXH Billboard va cac MV quoc te soi dong
+K010|VTV9 HD|TL01|HD|Tieng Viet|Kenh truyen hinh thong tin van hoa vung dong bang Nam Bo
+K011|National Geographic|TL04|4K|Tieng Anh|Kenh phim tai lieu dia ly sinh hoc va vu tru sac net 4K
+K012|VTV2 HD|TL09|HD|Tieng Viet|Kenh khoa hoc cong nghe doi song va giao duc pho thong

@@ -1,0 +1,12 @@
+VOD001|Bo Gia|TL03|106|2021|Tran Thanh|Phim tam ly gia dinh Viet Nam doat doanh thu ky luc
+VOD002|Mat Biec|TL03|117|2019|Victor Vu|Chuyen the tu tieu thuyet lang man cua Nguyen Nhat Anh
+VOD003|Hanh Tinh Xanh|TL04|60|2020|David Attenborough|Phim tai lieu kham pha su song ky vi trong long dai duong
+VOD004|Huyen Thoai San Co|TL02|90|2022|Alex Ferguson|Hanh trinh lich su bong da hien dai va nhung cuoc doi dau kinh dien
+VOD005|Avatar Dong Chay Nuoc|TL03|192|2022|James Cameron|Sieu pham khoa hoc vien tuong the gioi Pandora 3D
+VOD006|Vu Tru Bao La|TL04|55|2023|Brian Cox|Kham pha cac ho den he mat troi va nguon goc vu tru
+VOD007|Kham Pha Mien Tay|TL09|45|2024|Le Hoang|Net dep van hoa am thuc va con nguoi mien Tay song nuoc
+VOD008|Vua Su Tu|TL06|88|2019|Jon Favreau|Phim hoat hinh 3D huyen thoai ve chu su tu nho Simba
+VOD009|Dai Chien San Co|TL02|120|2024|Pep Guardiola|Nhung khoanh khac dang quang vo dich kien cuong nhat
+VOD010|Doraemon Nam Cuc|TL06|105|2021|Atsushi Takahashi|Cuoc phieu luu ky thu cua nhom ban Nobita tai vung bang gia
+VOD011|Top Gun Maverick|TL03|130|2022|Joseph Kosinski|Phim hanh dong khong chien dinh cao voi nhung pha nhao lon
+VOD012|Ban Hung Ca Dien Bien|TL10|75|2024|Dang Nhat Minh|Tai hien chien thang lich su Dien Bien Phu lung lay nam chau

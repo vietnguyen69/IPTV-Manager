@@ -1,0 +1,10 @@
+GK01|Goi Co Ban|Goi kenh truyen hinh thiet yeu tin tuc va doi song|50000.00|60|Co ban|Hoat dong
+GK02|Goi Gia Dinh|Goi kenh giai tri thieu nhi va phim truyen gia dinh|120000.00|120|Gia dinh|Hoat dong
+GK03|Goi VIP Premium|Goi kenh the thao K+ ngoai hang va phim chieu rap 4K|250000.00|180|Cao cap|Hoat dong
+GK04|Goi The Thao Sport|Chuyen biet cac giai bong da Ngoai Hang Anh F1 Tennis|150000.00|85|Chuyen biet|Hoat dong
+GK05|Goi Dien Anh Cine|Tong hop cac kenh phim truyen HBO Cinemax WarnerTV|140000.00|90|Chuyen biet|Hoat dong
+GK06|Goi Quoc Te Global|Cac kenh tin tuc va giai tri quoc te CNN BBC Discovery|130000.00|100|Quoc te|Hoat dong
+GK07|Goi Thieu Nhi Kids|Kenh hoat hinh giao duc ky nang song an toan cho be|70000.00|50|Thieu nhi|Hoat dong
+GK08|Goi Khoa Hoc Edu|Cac kenh National Geographic Discovery Animal Planet|90000.00|65|Giao duc|Hoat dong
+GK09|Goi Doanh Nghiep Biz|Goi kenh chuyen biet nha hang khach san va van phong|350000.00|200|Doanh nghiep|Hoat dong
+GK10|Goi Sieu Tiet Kiem|Goi kenh dia phuong mien phi kem truyen hinh quang ba|30000.00|40|Tiet kiem|Hoat dong

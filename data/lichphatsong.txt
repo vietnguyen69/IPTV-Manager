@@ -1,0 +1,12 @@
+L001|K001|Chao buoi sang|24/10/2026|06:00|07:00|Ban tin khoi dau ngay moi cung tin tuc nong hoi
+L002|K001|Thoi su 12h|24/10/2026|12:00|12:30|Ban tin thoi su trua cap nhat tinh hinh thoi su
+L003|K001|Thoi su 19h|24/10/2026|19:00|19:45|Ban tin thoi su quoc gia quan trong nhat trong ngay
+L004|K002|Chiec non ky dieu|24/10/2026|10:00|11:00|Tro choi truyen hinh doan chu kinh dien
+L005|K002|Duong len dinh Olympia|24/10/2026|13:00|14:00|Cuoc thi kien thuc gay can cua hoc sinh THPT
+L006|K003|Ngoai Hang Anh Arsenal vs Chelsea|24/10/2026|20:30|22:30|Tran derby London truc tiep ruc lua san Emirates
+L007|K004|Kham pha vung bien sau|24/10/2026|15:00|16:00|Nhung sinh vat bi an duoi do sau 5000 met
+L008|K005|Tom va Jerry phieu luu|24/10/2026|08:00|09:00|Cuoc duoi bat hai huoc kinh dien cua meo va chuot
+L009|K006|Cuoi xuyen Viet|24/10/2026|21:00|22:00|San khau hai tre soi dong va nhieu tieng cuoi
+L010|K007|Phim Batman Ky si bong dem|24/10/2026|20:00|22:30|Sieu pham dien anh ve nguoi doi chong lai Joker
+L011|K008|Dua xe Cong thuc 1 F1 GP|24/10/2026|18:00|20:00|Chang dua chang Singapore Grand Prix dem ngoan muc
+L012|K011|Bi an vu tru va ho den|24/10/2026|19:30|20:30|Tai lieu chat luong cao 4K kham pha dai ngan ha
