@@ -1,5 +1,6 @@
 //Tac gia: Nguyen Quoc Viet - B24DCVT395
-//Use case: Quan ly the loai kenh
+//Use case quan ly the loai kenh
+
 #ifndef THELOAIKENH_H
 #define THELOAIKENH_H
 
@@ -38,10 +39,7 @@ public:
 
     void setMoTa(const string& mt) { moTa = mt; }
 
-    // =================================================================================
-    // CAI DAT 9 PHUONG THUC THUAN AO TU LOP CO SO ENTITY
-    // =================================================================================
-
+    // Cai dat 9 ham thuan ao tu lop Entity
     // 1. Tra ve khoa chinh dinh danh duy nhat cho Repository quan ly
     string getId() const override { return maTheLoai; }
 
@@ -76,12 +74,12 @@ public:
              << endl;
     }
 
-    // 6. Tuan tu hoa du lieu (Serialize) thanh dong van ban cach nhau boi dau '|' de ghi vao file
+    // Tuan tu hoa du lieu thanh dong van ban cach nhau boi dau '|' de ghi vao file
     string toFileString() const override {
         return maTheLoai + "|" + tenTheLoai + "|" + moTa;
     }
 
-    // 7. Giai tuan tu hoa (Deserialize) tu dong van ban doc tu file de nap lai vao thuoc tinh
+    // Giai tuan tu hoa tu dong van ban doc tu file de nap lai vao thuoc tinh
     void fromFileString(const string& line) override {
         stringstream ss(line);
         getline(ss, maTheLoai, '|');
@@ -89,7 +87,7 @@ public:
         getline(ss, moTa, '|');
     }
 
-    // 8. Nhap moi du lieu tu ban phim (co kiem tra rang buoc bat buoc khong de trong)
+    // Nhap moi du lieu tu ban phim (co kiem tra rang buoc bat buoc khong de trong)
     void inputData() override {
         cout << "  Nhap ma the loai (VD: TL001): ";
         getline(cin, maTheLoai);
@@ -107,7 +105,7 @@ public:
         getline(cin, moTa);
     }
 
-    // 9. Cap nhat thong tin ban ghi (neu de trong va nhan Enter thi giu nguyen gia tri cu)
+    // Cap nhat thong tin ban ghi (neu de trong va nhan Enter thi giu nguyen gia tri cu)
     void updateData() override {
         string temp;
         cout << "  (Nhan Enter de giu nguyen gia tri cu)\n" << endl;

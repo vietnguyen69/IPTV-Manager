@@ -1,11 +1,5 @@
-/**
- * =====================================================================================
- * De tai 7: Quan ly dich vu truyen hinh so / IPTV
- * File   : TheLoaiKenhMenu.h
- * Mo ta  : Lop Dieu khien giao dien (Controller/Menu) cho Use case: Quan ly The loai kenh.
- *          Thuc hien day du cac chuc nang CRUD, kiem tra toan ven du lieu voi NoiDungVOD.
- * =====================================================================================
- */
+//Tac gia: Nguyen Quoc Viet - B24DCVT395
+//Menu quan ly the loai kenh
 #ifndef THELOAIKENHMENU_H
 #define THELOAIKENHMENU_H
 
@@ -24,7 +18,7 @@ private:
     Repository<TheLoaiKenh>& repoTheLoai;  // Kho luu tru the loai kenh
     Repository<NoiDungVOD>&   repoVOD;      // Kho VOD (dung de kiem tra rang buoc toan ven khoa ngoai)
 
-    // ----- 1. THEM THE LOAI MOI (Create) -----
+    // Them the loai moi
     void themTheLoai() {
         printTitle("THEM THE LOAI KENH MOI");
         try {
@@ -44,13 +38,13 @@ private:
         }
     }
 
-    // ----- 2. HIEN THI DANH SACH THE LOAI (Read All) -----
+    // Hien thi danh sach the loai
     void hienThiTheLoai() {
         printTitle("DANH SACH THE LOAI KENH");
         displayTable(repoTheLoai.getAll()); // Dung ham mau displayTable de in bang tu dong
     }
 
-    // ----- 3. TIM KIEM THE LOAI (Search) -----
+    // Tim kiem the loai
     void timKiemTheLoai() {
         printTitle("TIM KIEM THE LOAI KENH");
         string keyword;
@@ -68,7 +62,7 @@ private:
         displayTable(results);
     }
 
-    // ----- 4. CAP NHAT THONG TIN THE LOAI (Update) -----
+    // Cap nhat thong tin the loai
     void capNhatTheLoai() {
         printTitle("CAP NHAT THE LOAI KENH");
         string id;
@@ -96,7 +90,7 @@ private:
         }
     }
 
-    // ----- 5. XOA THE LOAI KENH (Delete) -----
+    // Xoa the loai kenh
     void xoaTheLoai() {
         printTitle("XOA THE LOAI KENH");
         string id;
@@ -186,4 +180,4 @@ public:
     }
 };
 
-#endif // THELOAIKENHMENU_H
+#endif

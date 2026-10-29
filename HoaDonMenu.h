@@ -1,7 +1,6 @@
-/*
- * HoaDonMenu.h
- * Menu quan ly Hoa Don va Thanh toan IPTV
- */
+// Tac gia: Do Gia Huy - B24DCVT172
+//Menu quan ly hoa don
+
 #ifndef HOADON_MENU_H
 #define HOADON_MENU_H
 
@@ -19,26 +18,31 @@ using namespace std;
 
 class HoaDonMenu {
 private:
-    Repository<HoaDon>&  repoHoaDon;
-    Repository<HopDong>& repoHopDong;
+    Repository<HoaDon>&  repoHoaDon;   // Tham chieu den kho luu tru Hoa Don
+    Repository<HopDong>& repoHopDong;  // Tham chieu den kho Hop Dong de kiem tra khoa ngoai
 
+    // 1. Chuc nang them hoa don moi
     void themHoaDon() {
         printTitle("THEM HOA DON MOI");
+        // Neu chua co hop dong nao trong he thong thi khong the phat sinh hoa don
         if (repoHopDong.isEmpty()) {
             cout << "\n  [CANH BAO] Chua co hop dong nao trong he thong. Hay them hop dong truoc!" << endl;
             return;
         }
+        // Hien thi danh sach hop dong hien co de nguoi dung chon ma hop dong
         cout << "\n  --- Danh sach hop dong hien co ---" << endl;
         displayTable(repoHopDong.getAll());
 
         try {
             HoaDon hd;
-            hd.inputData();
+            hd.inputData(); // Nhap du lieu hoa don tu ban phim
 
+            // Kiem tra khoa ngoai: maHopDong vua nhap phai ton tai
             if (repoHopDong.findById(hd.getMaHopDong()) == nullptr) {
                 throw invalid_argument("Ma hop dong '" + hd.getMaHopDong() + "' khong ton tai!");
             }
 
+            // Them vao repository va kiem tra trung maHoaDon
             if (repoHoaDon.add(hd)) {
                 cout << "\n  >> Them hoa don thanh cong!" << endl;
             } else {
@@ -49,11 +53,13 @@ private:
         }
     }
 
+    // 2. Chuc nang hien thi toan bo danh sach hoa don
     void hienThiHoaDon() {
         printTitle("DANH SACH HOA DON");
         displayTable(repoHoaDon.getAll());
     }
 
+    // 3. Chuc nang tim kiem hoa don theo tu khoa
     void timKiemHoaDon() {
         printTitle("TIM KIEM HOA DON");
         string keyword;
@@ -66,6 +72,7 @@ private:
         displayTable(repoHoaDon.search(keyword));
     }
 
+    // 4. Chuc nang cap nhat thong tin hoa don
     void capNhatHoaDon() {
         printTitle("CAP NHAT HOA DON");
         string id;
@@ -77,9 +84,11 @@ private:
             return;
         }
         found->display();
+        // Luu ban sao de rollback neu gap loi
         HoaDon backup = *found;
         try {
             found->updateData();
+            // Kiem tra khoa ngoai maHopDong sau khi sua
             if (repoHopDong.findById(found->getMaHopDong()) == nullptr) {
                 *found = backup;
                 throw invalid_argument("Ma hop dong '" + found->getMaHopDong() + "' khong ton tai!");
@@ -92,6 +101,7 @@ private:
         }
     }
 
+    // 5. Chuc nang xu ly thanh toan hoa don (chuyen trang thai)
     void thanhToanHoaDon() {
         printTitle("THANH TOAN HOA DON");
         string id;
@@ -112,13 +122,14 @@ private:
         getline(cin, cf);
         if (cf == "Y" || cf == "y") {
             found->setTrangThaiThanhToan("Da thanh toan");
-            repoHoaDon.saveAfterUpdate();
+            repoHoaDon.saveAfterUpdate(); // Dong bo file
             cout << "\n  >> Thanh toan hoa don thanh cong!" << endl;
         } else {
             cout << "\n  >> Da huy thao tac thanh toan." << endl;
         }
     }
 
+    // 6. Chuc nang xoa hoa don
     void xoaHoaDon() {
         printTitle("XOA HOA DON");
         string id;
@@ -144,6 +155,7 @@ private:
         }
     }
 
+    // 7. Chuc nang thong ke doanh thu va cong no chua thu
     void thongKeHoaDon() {
         printTitle("THONG KE HOA DON VA DOANH THU");
         const auto& ds = repoHoaDon.getAll();
@@ -156,6 +168,7 @@ private:
         double tongDoanhThu = 0;
         double tongChuaThu = 0;
 
+        // Duyet qua toan bo danh sach de tong hop so lieu
         for (const auto& hd : ds) {
             if (hd.getTrangThaiThanhToan() == "Da thanh toan") {
                 daTT++;
@@ -179,13 +192,16 @@ private:
     }
 
 public:
+    // Constructor truyen cac Repository phu thuoc
     HoaDonMenu(Repository<HoaDon>& rHD, Repository<HopDong>& rHopDong)
         : repoHoaDon(rHD), repoHopDong(rHopDong) {}
 
+    // Ham chay menu con cua Hoa Don
     void chay() {
         hienThiMenu();
     }
 
+    // Vong lap dieu huong menu con
     void hienThiMenu() {
         int choice = -1;
         do {
@@ -228,4 +244,4 @@ public:
     }
 };
 
-#endif // HOADON_MENU_H
+#endif

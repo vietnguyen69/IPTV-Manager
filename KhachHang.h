@@ -1,9 +1,6 @@
-/*
- * KhachHang.h
- * Lop quan ly Khach Hang dich vu truyen hinh so/IPTV
- * Ke thua tu Entity
- * De tai 7: Quan ly dich vu truyen hinh so/IPTV
- */
+//Tac gia: Tran Thanh Tung - B24DCVT383
+//Use case: Quan ly khach hang
+
 #ifndef KHACH_HANG_H
 #define KHACH_HANG_H
 
@@ -78,8 +75,9 @@ public:
           email(mail), diaChi(dc), ngayDangKy(ngay), maGoiKenh(maGoi),
           trangThai(tt) {}
 
-    // ------- Getter / Setter -------
+    // Getter 
     string getMaKH() const { return maKH; }
+	// Setter
     void setMaKH(const string& ma) { maKH = ma; }
 
     string getHoTen() const { return hoTen; }
@@ -137,7 +135,7 @@ public:
         trangThai = tt;
     }
 
-    // ------- Cai dat 9 ham thuan ao tu Entity -------
+    // Cai dat 9 ham thuan ao tu Entity
     string getId() const override { return maKH; }
     string getDisplayName() const override { return hoTen; }
 
@@ -325,4 +323,4 @@ public:
     }
 };
 
-#endif // KHACH_HANG_H
+#endif

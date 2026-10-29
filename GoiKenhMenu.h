@@ -1,8 +1,6 @@
-/*
- * GoiKenhMenu.h
- * Menu quan ly Goi Kenh - Giao dien console cho use case CRUD Goi Kenh
- * De tai 7: Quan ly dich vu truyen hinh so/IPTV
- */
+//Tac gia: Tran Thanh Tung - B24DCVT383
+//Menu Quan ly goi kenh
+
 #ifndef GOI_KENH_MENU_H
 #define GOI_KENH_MENU_H
 
@@ -13,6 +11,7 @@
 #include "GoiKenh.h"
 #include "Repository.h"
 #include "Utils.h"
+#include "CommonUI.h"
 
 using namespace std;
 
@@ -20,7 +19,7 @@ class GoiKenhMenu {
 private:
     Repository<GoiKenh>& repo;
 
-    // ------- 1. THEM MOI -------
+    // Them moi
     void themGoiKenh() {
         Display::inTieuDe("THEM GOI KENH MOI", 60);
         try {
@@ -37,14 +36,14 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 2. XEM DANH SACH -------
+    // Xem danh sach
     void xemDanhSach() {
         Display::inTieuDe("DANH SACH GOI KENH", 65);
         Display::inBang(repo.getAll());
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 3. TIM KIEM -------
+    // Tim kiem
     void timKiem() {
         Display::inTieuDe("TIM KIEM GOI KENH", 60);
         cout << "  1. Tim theo ma goi\n";
@@ -114,7 +113,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 4. SAP XEP -------
+    // Sap xep
     void sapXep() {
         Display::inTieuDe("SAP XEP DANH SACH GOI KENH", 60);
         cout << "  1. Sap xep theo ten A-Z\n";
@@ -158,7 +157,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 5. CAP NHAT -------
+    // Cap nhat
     void capNhat() {
         Display::inTieuDe("CAP NHAT THONG TIN GOI KENH", 60);
         string ma = InputHelper::nhapChuoiBatBuoc("  Nhap ma goi kenh can sua: ");
@@ -183,7 +182,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 6. XOA -------
+    // Xoa
     void xoaGoiKenh(function<bool(const string&)> ktraKhachHangDungGoi) {
         Display::inTieuDe("XOA GOI KENH", 60);
         string ma = InputHelper::nhapChuoiBatBuoc("  Nhap ma goi kenh can xoa: ");
@@ -231,6 +230,7 @@ public:
     void hienThiMenu(function<bool(const string&)> ktraKhachHangDungGoi = nullptr) {
         int luaChon;
         do {
+            clearScreen();
             Display::inTieuDe("QUAN LY GOI KENH TRUYEN HINH", 60);
             cout << "  1. Them goi kenh moi\n";
             cout << "  2. Xem danh sach goi kenh\n";
@@ -255,4 +255,4 @@ public:
     }
 };
 
-#endif // GOI_KENH_MENU_H
+#endif

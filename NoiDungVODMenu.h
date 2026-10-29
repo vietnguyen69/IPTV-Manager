@@ -1,12 +1,6 @@
-/**
- * =====================================================================================
- * De tai 7: Quan ly dich vu truyen hinh so / IPTV
- * File   : NoiDungVODMenu.h
- * Mo ta  : Lop Dieu khien giao dien (Controller/Menu) cho Use case: Quan ly Noi dung VOD.
- *          Thuc hien day du cac chuc nang CRUD, kiem tra toan ven rang buoc khoa ngoai
- *          voi bang TheLoaiKenh khi them va cap nhat noi dung.
- * =====================================================================================
- */
+//Tac gia: Nguyen Quoc Viet - B24DCVT395
+//Menu quan ly noi dung VOD
+
 #ifndef NOIDUNGVODMENU_H
 #define NOIDUNGVODMENU_H
 
@@ -25,7 +19,7 @@ private:
     Repository<NoiDungVOD>&   repoVOD;      // Kho luu tru noi dung VOD
     Repository<TheLoaiKenh>& repoTheLoai;  // Kho the loai kenh (dung kiem tra khoa ngoai maTheLoai)
 
-    // ----- 1. THEM NOI DUNG VOD MOI (Create) -----
+    // Them noi dung VOD moi
     void themVOD() {
         printTitle("THEM NOI DUNG VOD MOI");
 
@@ -61,13 +55,13 @@ private:
         }
     }
 
-    // ----- 2. HIEN THI DANH SACH VOD (Read All) -----
+    // Hien thi danh sach VOD
     void hienThiVOD() {
         printTitle("DANH SACH NOI DUNG VOD");
         displayTable(repoVOD.getAll()); // Dung template displayTable in bang chuan
     }
 
-    // ----- 3. TIM KIEM NOI DUNG VOD (Search) -----
+    // Tim kiem noi dung VOD
     void timKiemVOD() {
         printTitle("TIM KIEM NOI DUNG VOD");
         string keyword;
@@ -85,7 +79,7 @@ private:
         displayTable(results);
     }
 
-    // ----- 4. CAP NHAT THONG TIN VOD (Update) -----
+    // Cap nhat thong tin VOD
     void capNhatVOD() {
         printTitle("CAP NHAT NOI DUNG VOD");
         string id;
@@ -122,7 +116,7 @@ private:
         }
     }
 
-    // ----- 5. XOA NOI DUNG VOD (Delete) -----
+    // Xoa noi dung VOD
     void xoaVOD() {
         printTitle("XOA NOI DUNG VOD");
         string id;
@@ -196,4 +190,4 @@ public:
     }
 };
 
-#endif // NOIDUNGVODMENU_H
+#endif

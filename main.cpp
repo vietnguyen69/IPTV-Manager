@@ -1,22 +1,4 @@
-/*
- * =====================================================================================
- * Kien truc:
- *  - Entity.h: Interface lop co so thuan ao cho tat ca cac doi tuong (10 entities)
- *  - Repository.h: Lop mau Repository<T> quan ly danh sach va doc/ghi file
- *  - CommonUI.h & Utils.h: Tien ich giao dien console, nhap lieu va bang bieu
- *  - 10 Use Cases (Model + Menu):
- *      1. TheLoaiKenh       & TheLoaiKenhMenu
- *      2. NoiDungVOD        & NoiDungVODMenu
- *      3. KenhTruyenHinh    & KenhTruyenHinhMenu
- *      4. LichPhatSong      & LichPhatSongMenu
- *      5. GoiKenh           & GoiKenhMenu
- *      6. KhachHang         & KhachHangMenu
- *      7. SetTopBox         & SetTopBoxMenu
- *      8. PhieuHoTro        & PhieuHoTroMenu
- *      9. HopDong           & HopDongMenu
- *     10. HoaDon            & HoaDonMenu
- * =====================================================================================
- */
+// Tac gia: Nguyen Quoc Viet - B24DCVT395
 
 #include <iostream>
 #include <string>
@@ -40,7 +22,6 @@
 #include "HopDong.h"
 #include "HoaDon.h"
 
-// 10 Menus
 #include "TheLoaiKenhMenu.h"
 #include "NoiDungVODMenu.h"
 #include "KenhTruyenHinhMenu.h"
@@ -54,27 +35,28 @@
 
 using namespace std;
 
+// In giao dien menu chinh cua he thong
 void inMenuChinh() {
     clearScreen();
     cout << "\n  ====================================================================\n";
-    cout << "             HE THONG QUAN LY DICH VU TRUYEN HINH SO / IPTV           \n";
+    cout << "             HE THONG QUAN LY DICH VU TRUYEN HINH IPTV           \n";
     cout << "  ====================================================================\n";
-    cout << "    1.  Quan ly The loai kenh\n";
-    cout << "    2.  Quan ly Noi dung VOD (Video On Demand)\n";
-    cout << "    3.  Quan ly Kenh truyen hinh\n";
-    cout << "    4.  Quan ly Lich phat song\n";
-    cout << "    5.  Quan ly Goi kenh truyen hinh\n";
-    cout << "    6.  Quan ly Khach hang\n";
-    cout << "    7.  Quan ly Thiet bi Set-Top-Box (STB)\n";
-    cout << "    8.  Quan ly Phieu ho tro ky thuat\n";
-    cout << "    9.  Quan ly Hop dong IPTV\n";
-    cout << "    10. Quan ly Hoa don va Thanh toan\n";
+    cout << "    1.  Quan ly the loai kenh\n";
+    cout << "    2.  Quan ly noi dung VOD\n";
+    cout << "    3.  Quan ly kenh truyen hinh\n";
+    cout << "    4.  Quan ly lich phat song\n";
+    cout << "    5.  Quan ly goi kenh truyen hinh\n";
+    cout << "    6.  Quan ly khach hang\n";
+    cout << "    7.  Quan ly thiet bi Set-top-box (STB)\n";
+    cout << "    8.  Quan ly phieu ho tro ky thuat\n";
+    cout << "    9.  Quan ly hop dong IPTV\n";
+    cout << "    10. Quan ly hoa don va Thanh toan\n";
     cout << "    0.  Thoat chuong trinh\n";
     cout << "  --------------------------------------------------------------------\n";
 }
 
 int main() {
-    // 1. Khoi tao 10 Repository gan voi cac file du lieu trong thu muc data/
+	//Khoi tao Repository
     Repository<TheLoaiKenh>    repoTheLoai("data/theloaikenh.txt");
     Repository<NoiDungVOD>     repoVOD("data/noidungvod.txt");
     Repository<KenhTruyenHinh> repoKenh("data/kenhtruyenhinh.txt");
@@ -86,7 +68,7 @@ int main() {
     Repository<HopDong>        repoHopDong("data/hopdong.txt");
     Repository<HoaDon>         repoHoaDon("data/hoadon.txt");
 
-    // 2. Thiet lap cac ham callback kiem tra rang buoc khoa ngoai
+    //Callback: Kiem tra goi kenh co dang duoc khach hang nao su dung khong (chan xoa goi kenh)
     auto ktraGoi = [&repoKhachHang](const string& maGoi) -> bool {
         const auto& dsKH = repoKhachHang.getAll();
         for (const auto& kh : dsKH) {
@@ -95,11 +77,13 @@ int main() {
         return false;
     };
 
+    //Kiem tra ma khach hang co ton tai trong he thong khong
     auto khTonTai = [&repoKhachHang](const string& maKH) -> bool {
         if (maKH.empty()) return true;
         return repoKhachHang.findById(maKH) != nullptr;
     };
 
+    //Kiem tra thiet bi STB co dang co phieu ho tro tham chieu khong (chan xoa STB)
     auto coPhieuHoTro = [&repoPhieuHoTro](const string& maSTB) -> bool {
         const auto& dsPhieu = repoPhieuHoTro.getAll();
         for (const auto& p : dsPhieu) {
@@ -108,12 +92,13 @@ int main() {
         return false;
     };
 
+    //Kiem tra ma STB co ton tai trong kho thiet bi khong
     auto stbTonTai = [&repoSTB](const string& maSTB) -> bool {
         if (maSTB.empty()) return false;
         return repoSTB.findById(maSTB) != nullptr;
     };
 
-    // 3. Khoi tao 10 Menu usecase tuong ung
+    //Khoi tao Menu usecase
     TheLoaiKenhMenu    menuTheLoai(repoTheLoai, repoVOD);
     NoiDungVODMenu     menuVOD(repoVOD, repoTheLoai);
     KenhTruyenHinhMenu menuKenh(repoKenh, repoTheLoai, repoLichPS);
@@ -125,7 +110,7 @@ int main() {
     HopDongMenu        menuHopDong(repoHopDong, repoHoaDon, khTonTai);
     HoaDonMenu         menuHoaDon(repoHoaDon, repoHopDong);
 
-    // 4. Vong lap dieu huong menu chinh
+	//Vong lap
     int luaChon = -1;
     do {
         inMenuChinh();
@@ -171,7 +156,7 @@ int main() {
                 break;
             case 0:
                 cout << "\n  ======================================================\n";
-                cout << "    Cam on ban da su dung he thong IPTV Manager!\n";
+                cout << "    Cam on ban da su dung phan mem!\n";
                 cout << "    Chuong trinh ket thuc. Tam biet!\n";
                 cout << "  ======================================================\n\n";
                 break;

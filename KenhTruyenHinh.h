@@ -1,7 +1,6 @@
-/*
- * File   : KenhTruyenHinh.h
- * Tac gia: Duong Duc Manh - MSSV: B24DCVT240
- */
+// Tac gia: Duong Duc Manh - B24DCVT240
+//Use case Quan ly kenh truyen hinh
+
 #ifndef KENHTRUYENHINH_H
 #define KENHTRUYENHINH_H
 
@@ -11,23 +10,26 @@
 
 class KenhTruyenHinh : public Entity {
 private:
-    string maKenh;
-    string tenKenh;
-    string maTheLoai;
-    string chatLuong;
-    string ngonNgu;
-    string moTa;
+    string maKenh;       // Ma dinh danh kenh (Khoa chinh, VD: K001, K002...)
+    string tenKenh;      // Ten kenh truyen hinh (VD: VTV1 HD, K+ SPORT 1...)
+    string maTheLoai;    // Ma the loai kenh (Khoa ngoai -> TheLoaiKenh, VD: TL01)
+    string chatLuong;    // Chat luong phat song: "SD", "HD", "Full HD", "4K"
+    string ngonNgu;      // Ngon ngu phat song (VD: Tieng Viet, Tieng Anh...)
+    string moTa;         // Mo ta noi dung phat song cua kenh
 
 public:
+    //Constructor mac dinh khoi tao chuoi rong
     KenhTruyenHinh()
         : maKenh(""), tenKenh(""), maTheLoai(""),
           chatLuong(""), ngonNgu(""), moTa("") {}
 
+    //Constructor day du tham so
     KenhTruyenHinh(const string& mk, const string& tk, const string& mtl,
                    const string& cl, const string& nn, const string& mt)
         : maKenh(mk), tenKenh(tk), maTheLoai(mtl),
           chatLuong(cl), ngonNgu(nn), moTa(mt) {}
 
+    // Cung cap Getter
     string getMaKenh() const { return maKenh; }
     string getTenKenh() const { return tenKenh; }
     string getMaTheLoai() const { return maTheLoai; }
@@ -35,6 +37,7 @@ public:
     string getNgonNgu() const { return ngonNgu; }
     string getMoTa() const { return moTa; }
 
+    // Cung cap Setter co kem kiem tra hop le
     void setMaKenh(const string& mk) { maKenh = mk; }
 
     void setTenKenh(const string& tk) {
@@ -54,9 +57,14 @@ public:
     void setNgonNgu(const string& nn) { ngonNgu = nn; }
     void setMoTa(const string& mt) { moTa = mt; }
 
+	// Cai dat 9 ham thuan ao tu lop Entity
+    // Khoa chinh dai dien cho kenh
     string getId() const override { return maKenh; }
+
+    // Ten dai dien dung trong tim kiem
     string getDisplayName() const override { return tenKenh; }
 
+    //Hien thi chi tiet thong tin kenh theo chieu doc
     void display() const override {
         cout << "  Ma kenh       : " << maKenh << endl;
         cout << "  Ten kenh      : " << tenKenh << endl;
@@ -66,6 +74,7 @@ public:
         cout << "  Mo ta         : " << moTa << endl;
     }
 
+    //In tieu de bang danh sach kenh truyen hinh
     void displayTableHeader() const override {
         cout << "  " << left
              << setw(6)  << "STT"
@@ -78,6 +87,7 @@ public:
         cout << "  " << string(80, '-') << endl;
     }
 
+    //In tung dong thong tin trong bang danh sach
     void displayTableRow(int stt) const override {
         cout << "  " << left
              << setw(6)  << stt
@@ -89,11 +99,13 @@ public:
              << endl;
     }
 
+    //Tuan tu hoa du lieu thanh chuoi de ghi vao file
     string toFileString() const override {
         return maKenh + "|" + tenKenh + "|" + maTheLoai + "|"
              + chatLuong + "|" + ngonNgu + "|" + moTa;
     }
 
+    //Giai tuan tu hoa tu dong van ban doc trong file
     void fromFileString(const string& line) override {
         stringstream ss(line);
         getline(ss, maKenh, '|');
@@ -104,6 +116,7 @@ public:
         getline(ss, moTa, '|');
     }
 
+    //Nhap moi thong tin kenh tu ban phim kem kiem tra rang buoc
     void inputData() override {
         cout << "  Nhap ma kenh (VD: K001): ";
         getline(cin, maKenh);
@@ -113,7 +126,7 @@ public:
         getline(cin, tenKenh);
         if (tenKenh.empty()) throw invalid_argument("Ten kenh khong duoc de trong!");
 
-        cout << "  Nhap ma the loai (VD: TL001): ";
+        cout << "  Nhap ma the loai (VD: TL01): ";
         getline(cin, maTheLoai);
         if (maTheLoai.empty()) throw invalid_argument("Ma the loai khong duoc de trong!");
 
@@ -129,6 +142,7 @@ public:
         getline(cin, moTa);
     }
 
+    //Cap nhat thong tin kenh (nhan Enter de giu nguyen gia tri cu)
     void updateData() override {
         string temp;
         cout << "  (Nhan Enter de giu nguyen gia tri cu)\n" << endl;

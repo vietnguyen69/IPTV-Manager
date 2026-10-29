@@ -1,7 +1,6 @@
-/*
- * HopDongMenu.h
- * Menu quan ly Hop Dong IPTV
- */
+// Tac gia: Do Gia Huy - B24DCVT172
+// Menu Quan ly hop dong
+
 #ifndef HOPDONG_MENU_H
 #define HOPDONG_MENU_H
 
@@ -18,16 +17,18 @@ using namespace std;
 
 class HopDongMenu {
 private:
-    Repository<HopDong>& repoHD;
-    Repository<HoaDon>&  repoHoaDon;
-    function<bool(const string&)> khTonTai;
+    Repository<HopDong>& repoHD;                           //Tham chieu den kho luu tru Hop Dong
+    Repository<HoaDon>&  repoHoaDon;                      //Tham chieu den kho Hoa Don de chan xoa vi pham rang buoc
+    function<bool(const string&)> khTonTai;               //Callback kiem tra maKhachHang co ton tai
 
+    // 1. Chuc nang them hop dong moi
     void themHopDong() {
         printTitle("THEM HOP DONG MOI");
         try {
             HopDong hd;
-            hd.inputData();
+            hd.inputData(); // Nhap thong tin hop dong
 
+            // Kiem tra rang buoc khoa ngoai: khach hang co ton tai trong he thong khong
             if (khTonTai && !hd.getMaKhachHang().empty() && !khTonTai(hd.getMaKhachHang())) {
                 cout << "\n  [CANH BAO] Ma khach hang '" << hd.getMaKhachHang() << "' chua co trong danh sach khach hang!" << endl;
                 cout << "  Tiep tuc them hop dong? (Y/N): ";
@@ -38,6 +39,7 @@ private:
                 }
             }
 
+            // Them vao repository va kiem tra trung maHopDong
             if (repoHD.add(hd)) {
                 cout << "\n  >> Them hop dong thanh cong!" << endl;
             } else {
@@ -48,11 +50,13 @@ private:
         }
     }
 
+    // 2. Chuc nang hien thi danh sach hop dong
     void hienThiHopDong() {
         printTitle("DANH SACH HOP DONG");
         displayTable(repoHD.getAll());
     }
 
+    // 3. Chuc nang tim kiem hop dong theo tu khoa
     void timKiemHopDong() {
         printTitle("TIM KIEM HOP DONG");
         cout << "\n  Nhap tu khoa (ma hop dong, ma khach hang hoac goi dich vu): ";
@@ -65,6 +69,7 @@ private:
         displayTable(repoHD.search(keyword));
     }
 
+    // 4. Chuc nang cap nhat hop dong
     void capNhatHopDong() {
         printTitle("CAP NHAT HOP DONG");
         cout << "\n  Nhap ma hop dong can cap nhat: ";
@@ -76,9 +81,12 @@ private:
             return;
         }
         found->display();
+
+        // Luu ban sao du phong truoc khi sua de rollback neu xay ra loi
         HopDong backup = *found;
         try {
             found->updateData();
+            // Kiem tra lai ma khach hang sau khi cap nhat
             if (khTonTai && !found->getMaKhachHang().empty() && !khTonTai(found->getMaKhachHang())) {
                 *found = backup;
                 throw invalid_argument("Ma khach hang '" + found->getMaKhachHang() + "' khong ton tai!");
@@ -91,6 +99,7 @@ private:
         }
     }
 
+    // 5. Chuc nang xoa hop dong kem kiem tra rang buoc toan ven voi HoaDon
     void xoaHopDong() {
         printTitle("XOA HOP DONG");
         cout << "\n  Nhap ma hop dong can xoa: ";
@@ -103,7 +112,7 @@ private:
         }
         found->display();
 
-        // Kiem tra rang buoc: hop dong co hoa don tham chieu khong
+        // Kiem tra rang buoc: hop dong co hoa don nao dang tham chieu toi khong
         bool dangDuocDung = false;
         const auto& dsHoaDon = repoHoaDon.getAll();
         for (const auto& hd : dsHoaDon) {
@@ -118,6 +127,7 @@ private:
             return;
         }
 
+        // Xac nhan truoc khi xoa
         cout << "\n  Ban co chac chan muon xoa hop dong '" << id << "'? (Y/N): ";
         string confirm;
         getline(cin, confirm);
@@ -133,14 +143,17 @@ private:
     }
 
 public:
+    // Constructor nhan cac Repository va callback kiem tra khoa ngoai
     HopDongMenu(Repository<HopDong>& rHD, Repository<HoaDon>& rHoaDon,
                 function<bool(const string&)> kh = nullptr)
         : repoHD(rHD), repoHoaDon(rHoaDon), khTonTai(kh) {}
 
+    // Ham khoi dong menu con cua Hop Dong
     void chay() {
         hienThiMenu();
     }
 
+    // Vong lap hien thi va xu ly lua chon menu
     void hienThiMenu() {
         int choice = -1;
         do {
@@ -179,4 +192,4 @@ public:
     }
 };
 
-#endif // HOPDONG_MENU_H
+#endif

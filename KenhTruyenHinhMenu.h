@@ -1,8 +1,6 @@
-/*
- * File   : KenhTruyenHinhMenu.h
- * Tac gia: Duong Duc Manh - MSSV: B24DCVT240
- * Mo ta  : Giao dien console cho use case Quan ly kenh truyen hinh (CRUD).
- */
+// Tac gia: Duong Duc Manh - B24DCVT240
+//Menu quan ly kenh truyen hinh
+
 #ifndef KENHTRUYENHINHMENU_H
 #define KENHTRUYENHINHMENU_H
 
@@ -19,26 +17,31 @@ using namespace std;
 
 class KenhTruyenHinhMenu {
 private:
-    Repository<KenhTruyenHinh>& repoKenh;
-    Repository<TheLoaiKenh>&    repoTheLoai;
-    Repository<LichPhatSong>&   repoLichPS;
+    Repository<KenhTruyenHinh>& repoKenh;     // Tham chieu den kho luu tru kenh truyen hinh
+    Repository<TheLoaiKenh>&    repoTheLoai;  // Tham chieu den kho the loai (de kiem tra khoa ngoai)
+    Repository<LichPhatSong>&   repoLichPS;   // Tham chieu den lich phat song (de kiem tra rang buoc xoa)
 
+    //Chuc nang them kenh truyen hinh moi
     void themKenh() {
         printTitle("THEM KENH TRUYEN HINH MOI");
+        // Neu chua co the loai nao thi khong the them kenh
         if (repoTheLoai.isEmpty()) {
-            cout << "\n  [CANH BAO] Chua co the loai kenh!" << endl;
+            cout << "\n  [CANH BAO] Chua co the loai kenh! Vui long them the loai truoc." << endl;
             return;
         }
 
+        //Hien thi danh sach the loai hien co de nguoi dung tien tham khao
         cout << "\n  --- Danh sach the loai hien co ---";
         displayTable(repoTheLoai.getAll());
         cout << endl;
         try {
             KenhTruyenHinh kenh;
-            kenh.inputData();
+            kenh.inputData(); //Nhap du lieu tu ban phim
+            //Kiem tra khoa ngoai: ma the loai vua nhap co ton tai khong
             if (repoTheLoai.findById(kenh.getMaTheLoai()) == nullptr) {
                 throw invalid_argument("Ma the loai '" + kenh.getMaTheLoai() + "' khong ton tai!");
             }
+            //Them vao repository va kiem tra trung khoa chinh
             if (repoKenh.add(kenh)) {
                 cout << "\n  >> Them kenh truyen hinh thanh cong!" << endl;
             } else {
@@ -49,11 +52,13 @@ private:
         }
     }
 
+    //Chuc nang hien thi toan bo danh sach kenh truyen hinh
     void hienThiKenh() {
         printTitle("DANH SACH KENH TRUYEN HINH");
         displayTable(repoKenh.getAll());
     }
 
+    //Chuc nang tim kiem kenh theo tu khoa (ma kenh hoac ten kenh)
     void timKiemKenh() {
         printTitle("TIM KIEM KENH TRUYEN HINH");
         string keyword;
@@ -65,6 +70,7 @@ private:
         displayTable(results);
     }
 
+    //Chuc nang cap nhat thong tin kenh
     void capNhatKenh() {
         printTitle("CAP NHAT KENH TRUYEN HINH");
         string id;
@@ -80,9 +86,11 @@ private:
         cout << "\n  --- Danh sach the loai hien co ---";
         displayTable(repoTheLoai.getAll());
 
+        //Luu ban sao du phong truoc khi sua, neu loi thi rollback
         KenhTruyenHinh backup = *found;
         try {
             found->updateData();
+            //Kiem tra khoa ngoai ma the loai sau khi cap nhat
             if (repoTheLoai.findById(found->getMaTheLoai()) == nullptr) {
                 *found = backup;
                 throw invalid_argument("Ma the loai khong ton tai!");
@@ -95,15 +103,20 @@ private:
         }
     }
 
+    //Chuc nang xoa kenh kem kiem tra rang buoc tham chieu
     void xoaKenh() {
         printTitle("XOA KENH TRUYEN HINH");
         string id;
         cout << "\n  Nhap ma kenh can xoa: ";
         getline(cin, id);
         KenhTruyenHinh* found = repoKenh.findById(id);
-        if (found == nullptr) return;
+        if (found == nullptr) {
+            cout << "\n  [LOI] Khong tim thay kenh can xoa!" << endl;
+            return;
+        }
         found->display();
 
+        //Kiem tra rang buoc: Kenh nay co dang co lich phat song hay khong
         bool dangSuDung = false;
         for (const auto& lps : repoLichPS.getAll()) {
             if (lps.getMaKenh() == id) {
@@ -116,6 +129,7 @@ private:
             return;
         }
 
+        //Xac nhan truoc khi xoa
         string confirm;
         cout << "\n  Ban co chac chan muon xoa? (Y/N): ";
         getline(cin, confirm);
@@ -128,9 +142,11 @@ private:
     }
 
 public:
+    //Constructor truyen cac Repository phu thuoc
     KenhTruyenHinhMenu(Repository<KenhTruyenHinh>& rK, Repository<TheLoaiKenh>& rTL, Repository<LichPhatSong>& rLPS)
         : repoKenh(rK), repoTheLoai(rTL), repoLichPS(rLPS) {}
 
+    //Vong lap chay menu con cua Kenh Truyen Hinh
     void chay() {
         int choice = -1;
         do {

@@ -1,7 +1,6 @@
-/*
- * Tac gia : Nguyen Ba Thanh Van - B24DCVT389
- * Giao dien console (menu) cua use case: Quan ly Phieu ho tro ky thuat
- */
+// Tac gia : Nguyen Ba Thanh Van - B24DCVT389
+// Menu quan ly Phieu ho tro ky thuat
+
 #ifndef PHIEUHOTROMENU_H
 #define PHIEUHOTROMENU_H
 
@@ -11,16 +10,23 @@
 #include <functional>
 #include "Repository.h"
 #include "PhieuHoTro.h"
+#include "CommonUI.h"
+
 using namespace std;
 
-// ===================== CRUD (menu console) =====================
-// stbTonTai(maSTB): set-top-box co ton tai khong
+// CRUD (menu console Phieu ho tro)
 class PhieuHoTroMenu {
-    Repository<PhieuHoTro>& repo;
-    function<bool(const string&)> stbTonTai;
+private:
+    Repository<PhieuHoTro>& repo;                     // Tham chieu den kho luu tru Phieu ho tro
+    function<bool(const string&)> stbTonTai;         // Callback kiem tra maSTB co ton tai tren he thong
 
+    // Tien ich nhap chuoi co loi nhac
     static string hoi(const string& c) { cout << c; string s; getline(cin, s); return s; }
+
+    // Tien ich in tieu de
     static void tieuDe(const string& t) { cout << "\n  ===== " << t << " =====\n"; }
+
+    // Tien ich in bang danh sach phieu ho tro
     static void bang(const vector<PhieuHoTro>& v) {
         if (v.empty()) { cout << "\n  [Danh sach trong!]\n"; return; }
         v[0].displayTableHeader();
@@ -28,60 +34,87 @@ class PhieuHoTroMenu {
         cout << "  Tong cong: " << v.size() << " ban ghi.\n";
     }
 
+    // 1. Chuc nang them phieu ho tro moi
     void them() {
         tieuDe("THEM PHIEU HO TRO");
         try {
             PhieuHoTro p; p.inputData();
+            // Kiem tra rang buoc khoa ngoai: Ma STB phai ton tai
             if (!stbTonTai(p.getMaSTB()))
                 throw invalid_argument("Set-top-box '" + p.getMaSTB() + "' khong ton tai");
             cout << (repo.add(p) ? "\n  >> Them thanh cong!\n" : "\n  [LOI] Ma phieu da ton tai!\n");
         } catch (const exception& e) { cout << "\n  [LOI] " << e.what() << endl; }
     }
+
+    // 2. Chuc nang tim kiem phieu ho tro theo tu khoa
     void tim() {
         tieuDe("TIM KIEM PHIEU HO TRO");
         string kw = hoi("  Nhap tu khoa (ma phieu / ma STB / mo ta): ");
         if (kw.empty()) { cout << "  [LOI] Tu khoa khong duoc de trong!\n"; return; }
         bang(repo.search(kw));
     }
+
+    // 3. Chuc nang cap nhat phieu ho tro
     void sua() {
         tieuDe("CAP NHAT PHIEU HO TRO");
         string id = hoi("  Nhap ma phieu: ");
         PhieuHoTro* p = repo.findById(id);
         if (!p) { cout << "  [LOI] Khong tim thay!\n"; return; }
         p->display();
-        PhieuHoTro backup = *p;
-        try { p->updateData(); repo.saveAfterUpdate(); cout << "\n  >> Cap nhat thanh cong!\n"; }
-        catch (const exception& e) { *p = backup; cout << "\n  [LOI] " << e.what() << "\n  Thay doi da bi huy.\n"; }
+        PhieuHoTro backup = *p; // Sao luu truoc khi sua
+        try {
+            p->updateData();
+            repo.saveAfterUpdate();
+            cout << "\n  >> Cap nhat thanh cong!\n";
+        } catch (const exception& e) {
+            *p = backup;
+            cout << "\n  [LOI] " << e.what() << "\n  Thay doi da bi huy.\n";
+        }
     }
+
+    // 4. Chuc nang xoa phieu ho tro (chi xoa khi da hoan thanh xu ly)
     void xoa() {
         tieuDe("XOA PHIEU HO TRO");
         string id = hoi("  Nhap ma phieu can xoa: ");
         PhieuHoTro* p = repo.findById(id);
         if (!p) { cout << "  [LOI] Khong tim thay!\n"; return; }
         p->display();
-        if (p->getTrangThai() != 3) { cout << "\n  [LOI] Khong the xoa: phieu chua hoan thanh!\n"; return; }
+        // Rang buoc nghiep vu: Khong the xoa phieu dang moi hoac dang xu ly
+        if (p->getTrangThai() != 3) {
+            cout << "\n  [LOI] Khong the xoa: phieu chua hoan thanh xu ly!\n";
+            return;
+        }
         string c = hoi("\n  Chac chan xoa? (Y/N): ");
-        if (c == "Y" || c == "y") { repo.remove(id); cout << "  >> Xoa thanh cong!\n"; }
-        else cout << "  >> Da huy.\n";
+        if (c == "Y" || c == "y") {
+            repo.remove(id);
+            cout << "  >> Xoa thanh cong!\n";
+        } else {
+            cout << "  >> Da huy.\n";
+        }
     }
 
 public:
-    PhieuHoTroMenu(Repository<PhieuHoTro>& r, function<bool(const string&)> stb) : repo(r), stbTonTai(stb) {}
+    // Constructor truyen repo va callback kiem tra maSTB
+    PhieuHoTroMenu(Repository<PhieuHoTro>& r, function<bool(const string&)> stb)
+        : repo(r), stbTonTai(stb) {}
 
+    // Ham chay menu
     void chay() { hienThiMenu(); }
 
+    // Vong lap dieu huong menu Phieu ho tro
     void hienThiMenu() {
         string in;
         do {
+            clearScreen();
             cout << "\n  ===== QUAN LY PHIEU HO TRO KY THUAT =====\n  1. Them\n  2. Xem danh sach\n  3. Tim kiem\n"
                     "  4. Cap nhat\n  5. Xoa\n  0. Quay lai\n  Lua chon: ";
             if (!getline(cin, in)) return;
-            if (in == "1") them();
-            else if (in == "2") { tieuDe("DANH SACH PHIEU HO TRO"); bang(repo.getAll()); }
-            else if (in == "3") tim();
-            else if (in == "4") sua();
-            else if (in == "5") xoa();
-            else if (in != "0") cout << "  [LOI] Lua chon khong hop le (0-5)!\n";
+            if (in == "1") { them(); pauseScreen(); }
+            else if (in == "2") { tieuDe("DANH SACH PHIEU HO TRO"); bang(repo.getAll()); pauseScreen(); }
+            else if (in == "3") { tim(); pauseScreen(); }
+            else if (in == "4") { sua(); pauseScreen(); }
+            else if (in == "5") { xoa(); pauseScreen(); }
+            else if (in != "0") { cout << "  [LOI] Lua chon khong hop le (0-5)!\n"; pauseScreen(); }
         } while (in != "0");
     }
 };

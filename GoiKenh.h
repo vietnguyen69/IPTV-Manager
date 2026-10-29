@@ -1,9 +1,6 @@
-/*
- * GoiKenh.h
- * Lop quan ly Goi Kenh truyen hinh so/IPTV
- * Ke thua tu Entity
- * De tai 7: Quan ly dich vu truyen hinh so/IPTV
- */
+//Tac gia: Tran Thanh Tung - B24DCVT383
+//Quan ly goi kenh
+
 #ifndef GOI_KENH_H
 #define GOI_KENH_H
 
@@ -37,8 +34,9 @@ public:
         : maGoi(ma), tenGoi(ten), moTa(mt), giaThue(gia),
           soKenh(soK), loaiGoi(loai), trangThai(tthai) {}
 
-    // ------- Getter / Setter -------
+    // Getter 
     string getMaGoi() const { return maGoi; }
+	// Setter
     void setMaGoi(const string& ma) { maGoi = ma; }
 
     string getTenGoi() const { return tenGoi; }
@@ -81,7 +79,7 @@ public:
 
     bool isDangCungCap() const { return trangThai == "Dang cung cap"; }
 
-    // ------- Cai dat 9 ham thuan ao tu Entity -------
+    // Cai dat 9 ham thuan ao tu Entity
     string getId() const override { return maGoi; }
     string getDisplayName() const override { return tenGoi; }
 
@@ -210,4 +208,4 @@ public:
     }
 };
 
-#endif // GOI_KENH_H
+#endif

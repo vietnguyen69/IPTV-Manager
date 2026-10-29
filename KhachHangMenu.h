@@ -1,8 +1,6 @@
-/*
- * KhachHangMenu.h
- * Menu quan ly Khach Hang - Giao dien console cho use case CRUD Khach Hang
- * De tai 7: Quan ly dich vu truyen hinh so/IPTV
- */
+////Tac gia: Tran Thanh Tung - B24DCVT383
+//Menu quan ly khach hang
+
 #ifndef KHACH_HANG_MENU_H
 #define KHACH_HANG_MENU_H
 
@@ -17,6 +15,7 @@
 #include "GoiKenh.h"
 #include "Repository.h"
 #include "Utils.h"
+#include "CommonUI.h"
 
 using namespace std;
 
@@ -25,7 +24,7 @@ private:
     Repository<KhachHang>& repoKH;
     Repository<GoiKenh>&   repoGK;  // Tham chieu de kiem tra goi kenh ton tai
 
-    // ------- 1. THEM MOI -------
+    // Them moi
     void themKhachHang() {
         Display::inTieuDe("THEM KHACH HANG MOI", 65);
         try {
@@ -53,7 +52,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 2. XEM DANH SACH -------
+    // Xem danh sach
     void xemDanhSach() {
         Display::inTieuDe("DANH SACH KHACH HANG IPTV", 70);
         const auto& ds = repoKH.getAll();
@@ -79,7 +78,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 3. XEM CHI TIET -------
+    // Xem chi tiet
     void xemChiTiet() {
         Display::inTieuDe("XEM CHI TIET KHACH HANG", 65);
         string ma = InputHelper::nhapChuoiBatBuoc("  Nhap ma khach hang: ");
@@ -103,7 +102,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 4. TIM KIEM -------
+    // Tim kiem
     void timKiem() {
         Display::inTieuDe("TIM KIEM KHACH HANG", 65);
         cout << "  1. Tim theo ma khach hang\n";
@@ -183,7 +182,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 5. SAP XEP -------
+    // Sap xep
     void sapXep() {
         Display::inTieuDe("SAP XEP DANH SACH KHACH HANG", 65);
         cout << "  1. Sap xep theo ho ten A-Z\n";
@@ -221,7 +220,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 6. CAP NHAT -------
+    // Cap nhat
     void capNhat() {
         Display::inTieuDe("CAP NHAT THONG TIN KHACH HANG", 65);
         string ma = InputHelper::nhapChuoiBatBuoc("  Nhap ma khach hang can sua: ");
@@ -293,7 +292,7 @@ private:
         Display::nhanPhimDeTiep();
     }
 
-    // ------- 8. THONG KE -------
+    // Thong ke
     void thongKe() {
         Display::inTieuDe("THONG KE KHACH HANG", 65);
         const auto& ds = repoKH.getAll();
@@ -347,6 +346,7 @@ public:
     void hienThiMenu() {
         int luaChon;
         do {
+            clearScreen();
             Display::inTieuDe("QUAN LY KHACH HANG IPTV", 65);
             cout << "  1. Them khach hang moi\n";
             cout << "  2. Xem danh sach khach hang\n";
@@ -375,4 +375,4 @@ public:
     }
 };
 
-#endif // KHACH_HANG_MENU_H
+#endif

@@ -1,8 +1,6 @@
-/*
- * Utils.h
- * Cac ham tien ich dung chung: nhap lieu an toan, kiem tra du lieu, hien thi bang
- * De tai 7: Quan ly dich vu truyen hinh so/IPTV
- */
+//Tac gia: Nguyen Quoc Viet - B24DCVT395
+//Cac ham tien ich dung chung
+
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -18,9 +16,7 @@
 
 using namespace std;
 
-// ============================================================
 // Lop ngoai le tu dinh nghia
-// ============================================================
 class AppException : public exception {
     string message;
 public:
@@ -53,9 +49,7 @@ public:
     ReferentialIntegrityException(const string& msg) : AppException("Rang buoc du lieu: " + msg) {}
 };
 
-// ============================================================
 // Lop InputHelper - Nhap lieu an toan
-// ============================================================
 class InputHelper {
 public:
     // Nhap so nguyen an toan
@@ -164,9 +158,7 @@ public:
     }
 };
 
-// ============================================================
 // Cac ham tien ich xu ly chuoi
-// ============================================================
 namespace StrUtils {
     // Tach chuoi theo ky tu phan cach
     inline vector<string> split(const string& s, char delim) {
@@ -194,9 +186,7 @@ namespace StrUtils {
     }
 }
 
-// ============================================================
 // Hien thi giao dien
-// ============================================================
 namespace Display {
     inline void inDuongKe(int width = 60) {
         cout << string(width, '=') << "\n";
@@ -239,4 +229,4 @@ namespace Display {
     }
 }
 
-#endif // UTILS_H
+#endif

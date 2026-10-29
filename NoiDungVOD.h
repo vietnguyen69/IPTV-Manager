@@ -1,5 +1,6 @@
 //Tac gia: Nguyen Quoc Viet - B24DCVT395
-//Use case: Quan ly noi dung VOD
+//Quan ly noi dung VOD
+
 #ifndef NOIDUNGVOD_H
 #define NOIDUNGVOD_H
 
@@ -18,18 +19,18 @@ private:
     string moTa;        // Mo ta tom tat noi dung
 
 public:
-    // Constructor mac dinh khoi tao cac gia tri an toan
+    //Constructor mac dinh khoi tao cac gia tri an toan
     NoiDungVOD()
         : maVOD(""), tieuDe(""), maTheLoai(""),
           thoiLuong(0), namSanXuat(0), daoDien(""), moTa("") {}
 
-    // Constructor day du tham so
+    //Constructor day du tham so
     NoiDungVOD(const string& ma, const string& td, const string& mtl,
                int tl, int nsx, const string& dd, const string& mt)
         : maVOD(ma), tieuDe(td), maTheLoai(mtl),
           thoiLuong(tl), namSanXuat(nsx), daoDien(dd), moTa(mt) {}
 
-    // ----- Cung cap Getter -----
+    //Cung cap Getter
     string getMaVOD() const { return maVOD; }
     string getTieuDe() const { return tieuDe; }
     string getMaTheLoai() const { return maTheLoai; }
@@ -38,7 +39,7 @@ public:
     string getDaoDien() const { return daoDien; }
     string getMoTa() const { return moTa; }
 
-    // ----- Cung cap Setter co kem logic kiem tra hop le -----
+    //Cung cap Setter co kem logic kiem tra hop le
     void setMaVOD(const string& ma) { maVOD = ma; }
 
     void setTieuDe(const string& td) {
@@ -62,14 +63,14 @@ public:
 
     void setDaoDien(const string& dd) { daoDien = dd; }
     void setMoTa(const string& mt) { moTa = mt; }
-
-    // 1. Tra ve khoa chinh dinh danh duy nhat de quan ly trong Repository
+	// Cai dat 9 ham thuan ao tu lop Entity
+    //Tra ve khoa chinh dinh danh duy nhat de quan ly trong Repository
     string getId() const override { return maVOD; }
 
-    // 2. Tra ve ten dai dien dung de tim kiem gan dung (search theo tieu de)
+    //Tra ve ten dai dien dung de tim kiem gan dung (search theo tieu de)
     string getDisplayName() const override { return tieuDe; }
 
-    // 3. Hien thi chi tiet day du thong tin theo chieu doc
+    //Hien thi chi tiet day du thong tin theo chieu doc
     void display() const override {
         cout << "  Ma VOD       : " << maVOD << endl;
         cout << "  Tieu de      : " << tieuDe << endl;
@@ -80,7 +81,7 @@ public:
         cout << "  Mo ta        : " << moTa << endl;
     }
 
-    // 4. In tieu de cua bang danh sach noi dung VOD
+    //In tieu de cua bang danh sach noi dung VOD
     void displayTableHeader() const override {
         cout << "  " << left
              << setw(6)  << "STT"
@@ -94,7 +95,7 @@ public:
         cout << "  " << string(96, '-') << endl;
     }
 
-    // 5. In 1 dong du lieu tuong ung trong bang danh sach
+    //In 1 dong du lieu tuong ung trong bang danh sach
     void displayTableRow(int stt) const override {
         string tdShort = tieuDe.length() > 24 ? tieuDe.substr(0, 21) + "..." : tieuDe;
         cout << "  " << left
@@ -108,14 +109,14 @@ public:
              << endl;
     }
 
-    // 6. Tuan tu hoa du lieu (Serialize) thanh chuoi noi boi '|' de luu file
+    //Tuan tu hoa du lieu (Serialize) thanh chuoi noi boi '|' de luu file
     string toFileString() const override {
         return maVOD + "|" + tieuDe + "|" + maTheLoai + "|"
              + to_string(thoiLuong) + "|" + to_string(namSanXuat) + "|"
              + daoDien + "|" + moTa;
     }
 
-    // 7. Giai tuan tu hoa (Deserialize) tu dong van ban doc tu file de nap vao doi tuong
+    //Giai tuan tu hoa (Deserialize) tu dong van ban doc tu file de nap vao doi tuong
     void fromFileString(const string& line) override {
         stringstream ss(line);
         string temp;
@@ -130,7 +131,7 @@ public:
         getline(ss, moTa, '|');
     }
 
-    // 8. Nhap moi du lieu VOD tu ban phim kem kiem tra hop le
+    //Nhap moi du lieu VOD tu ban phim kem kiem tra hop le
     void inputData() override {
         string temp;
 
@@ -171,7 +172,7 @@ public:
         getline(cin, moTa);
     }
 
-    // 9. Cap nhat thong tin VOD (nhan Enter de giu nguyen gia tri cu)
+    //Cap nhat thong tin VOD (nhan Enter de giu nguyen gia tri cu)
     void updateData() override {
         string temp;
         cout << "  (Nhan Enter de giu nguyen gia tri cu)\n" << endl;
@@ -218,4 +219,4 @@ public:
     }
 };
 
-#endif // NOIDUNGVOD_H
+#endif

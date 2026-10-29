@@ -1,7 +1,6 @@
-/*
- * File   : LichPhatSong.h
- * Tac gia: Duong Duc Manh - MSSV: B24DCVT240
- */
+// Tac gia: Duong Duc Manh - B24DCVT240
+// Use case quan ly lich phat song
+
 #ifndef LICHPHATSONG_H
 #define LICHPHATSONG_H
 
@@ -11,14 +10,15 @@
 
 class LichPhatSong : public Entity {
 private:
-    string maLich;
-    string maKenh;
-    string tenChuongTrinh;
-    string ngayPhatSong;
-    string gioBatDau;
-    string gioKetThuc;
-    string moTa;
+    string maLich;           // Ma dinh danh lich phat song (Khoa chinh, VD: L001, L002...)
+    string maKenh;           // Ma kenh truyen hinh (Khoa ngoai -> KenhTruyenHinh, VD: K001)
+    string tenChuongTrinh;   // Ten chuong trinh phat song (VD: Thoi su 19h, Ngoai Hang Anh...)
+    string ngayPhatSong;     // Ngay phat song (dinh dang DD/MM/YYYY)
+    string gioBatDau;        // Gio bat dau phat (dinh dang HH:MM)
+    string gioKetThuc;       // Gio ket thuc phat (dinh dang HH:MM, phai > gioBatDau)
+    string moTa;             // Mo ta chi tiet ve chuong trinh
 
+    // Ham kiem tra dinh dang va tinh hop le cua chuoi ngay DD/MM/YYYY
     bool isValidDate(const string& date) const {
         if (date.length() != 10) return false;
         if (date[2] != '/' || date[5] != '/') return false;
@@ -36,6 +36,7 @@ private:
         return true;
     }
 
+    // Ham kiem tra dinh dang va tinh hop le cua chuoi gio HH:MM
     bool isValidTime(const string& time) const {
         if (time.length() != 5) return false;
         if (time[2] != ':') return false;
@@ -52,16 +53,19 @@ private:
     }
 
 public:
+    // Constructor mac dinh khoi tao cac gia tri rong
     LichPhatSong()
         : maLich(""), maKenh(""), tenChuongTrinh(""),
           ngayPhatSong(""), gioBatDau(""), gioKetThuc(""), moTa("") {}
 
+    // Constructor day du tham so
     LichPhatSong(const string& ml, const string& mk, const string& tcp,
                  const string& nps, const string& gbd, const string& gkt,
                  const string& mt)
         : maLich(ml), maKenh(mk), tenChuongTrinh(tcp),
           ngayPhatSong(nps), gioBatDau(gbd), gioKetThuc(gkt), moTa(mt) {}
 
+    // Cung cap Getter
     string getMaLich() const { return maLich; }
     string getMaKenh() const { return maKenh; }
     string getTenChuongTrinh() const { return tenChuongTrinh; }
@@ -70,6 +74,7 @@ public:
     string getGioKetThuc() const { return gioKetThuc; }
     string getMoTa() const { return moTa; }
 
+    // Cung cap Setter co kiem tra hop le
     void setMaLich(const string& ml) { maLich = ml; }
     void setMaKenh(const string& mk) { maKenh = mk; }
 
@@ -83,6 +88,7 @@ public:
         ngayPhatSong = nps;
     }
 
+    // Thiet lap khung gio kem kiem tra gio bat dau phai truoc gio ket thuc
     void setKhungGio(const string& gbd, const string& gkt) {
         if (!isValidTime(gbd) || !isValidTime(gkt)) {
             throw invalid_argument("Gio phai co dinh dang HH:MM!");
@@ -96,9 +102,12 @@ public:
 
     void setMoTa(const string& mt) { moTa = mt; }
 
+    // Cai dat 9 ham thuan ao tu lop Entity
+    // 1. Khoa chinh dai dien cho lich phat song
     string getId() const override { return maLich; }
+    // 2. Ten dai dien dung trong tim kiem
     string getDisplayName() const override { return tenChuongTrinh; }
-
+    // 3. Hien thi chi tiet thong tin lich phat song theo chieu doc
     void display() const override {
         cout << "  Ma lich        : " << maLich << endl;
         cout << "  Ma kenh        : " << maKenh << endl;
@@ -108,6 +117,7 @@ public:
         cout << "  Mo ta          : " << moTa << endl;
     }
 
+    // 4. In dong tieu de bang danh sach
     void displayTableHeader() const override {
         cout << "  " << left
              << setw(6)  << "STT"
@@ -120,6 +130,7 @@ public:
         cout << "  " << string(82, '-') << endl;
     }
 
+    // 5. In dong du lieu trong bang
     void displayTableRow(int stt) const override {
         string tcpShort = tenChuongTrinh.length() > 24 ? tenChuongTrinh.substr(0, 21) + "..." : tenChuongTrinh;
         cout << "  " << left
@@ -132,11 +143,13 @@ public:
              << endl;
     }
 
+    // 6. Tuan tu hoa du lieu thanh chuoi de ghi vao file
     string toFileString() const override {
         return maLich + "|" + maKenh + "|" + tenChuongTrinh + "|"
              + ngayPhatSong + "|" + gioBatDau + "|" + gioKetThuc + "|" + moTa;
     }
 
+    // 7. Giai tuan tu hoa tu dong van ban doc tu file
     void fromFileString(const string& line) override {
         stringstream ss(line);
         getline(ss, maLich, '|');
@@ -148,6 +161,7 @@ public:
         getline(ss, moTa, '|');
     }
 
+    // 8. Nhap moi du lieu tu ban phim kem kiem tra rang buoc
     void inputData() override {
         cout << "  Nhap ma lich (VD: L001): ";
         getline(cin, maLich);
@@ -175,6 +189,7 @@ public:
         getline(cin, moTa);
     }
 
+    // 9. Cap nhat thong tin lich (nhan Enter de giu nguyen gia tri cu)
     void updateData() override {
         string temp;
         cout << "  (Nhan Enter de giu nguyen gia tri cu)\n" << endl;
